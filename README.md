@@ -1,4 +1,4 @@
 tutoriels
 =========
 
-Some tutorials, to help me reminds things, I'm getting older
+Some tutorials, to help me remind things, I'm getting older
