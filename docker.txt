@@ -1,0 +1,122 @@
+# introduction a docker.
+
+# Installer docker sur une machine debian:
+# ajouter une nouvelle source pour le gestionnaire de packets:
+# echo 'deb https://get.docker.io/ubuntu docker main' > /etc/apt/sources.list.d/docker.list
+# aptitude update
+# aptitude install aufs-tools
+# curl -sSL https://get.docker.io/ | sh
+
+
+# ajouter un utilisateur au groupe docker, afin de pouvoir utiliser docker sans etre root
+# usermod -a nsukami -G docker
+
+
+# chercher une image
+$ docker search ubuntu
+
+
+# recuperer une image, une image sert de base au demarrage d'un conteneur
+$ docker pull ubuntu
+
+
+# liste des images que j'ai deja telechargées
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+ubuntu              latest              826544226fdc        2 weeks ago         194.2 MB
+
+
+# lancer un conteneur, et executer un shell a l'interieur de ce conteneur
+# -i --> interactif
+# -t --> tty console
+# ubuntu --> l'image de base servant au lancement du conteneur
+# /bin/bash --> la commande a executer
+$ docker run -it ubuntu /bin/bash
+root@87e4881973f6:/#
+# vs etes a l'interieur du conteneur
+
+
+# on aurait pu par exemple regarder la configuration de eth0 dans le conteneur
+$ docker run -it ubuntu ip addr show eth0
+21: eth0: <NO-CARRIER,BROADCAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state DOWN group default qlen 1000
+    link/ether b6:2c:6b:17:c2:6f brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.10/16 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::b42c:6bff:fe17:c26f/64 scope link tentative
+       valid_lft forever preferred_lft forever
+$
+
+
+# ou bien regarder les processus en cours d'execution ds notre conteneur
+$ docker run -ti ubuntu ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0   7132   640 ?        Rs+  22:36   0:00 ps aux
+$
+
+
+# la commande s'execute, et une fois le resultat obtenu, le conteneur s'arrete
+
+
+# le reseau
+# par defaut, tous les conteneurs seront attachés a un bridge 'docker0' sur la machine hote
+# c'est par ce bridge que les paquets transiteront vers/du conteneur
+$ ip addr show docker0
+4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
+    link/ether 56:84:7a:fe:97:99 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.42.1/16 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5484:7aff:fefe:9799/64 scope link
+       valid_lft forever preferred_lft forever
+
+
+# comment construire/personnaliser mon conteneur?
+
+# option1:
+# utiliser un Dockerfile, (aucun conteneur n'est pas démarré)
+# docker build, commande permettant de construire une 'image'
+# se rendre ds le repertoire contenant le Dockerfile et executer
+$ docker build -t user_name/image_name . # user_name/image_name est le nom que vous donnez a votre image
+
+# vous venez de construire une nouvelle image
+# pour verifier
+$ docker images
+postgresql          latest              da77b8b70bea        7 days ago          489.9 MB
+ubuntu/patrick      latest              f34ccd46b78d        8 days ago          346.7 MB
+
+# exemple de Dockerfile: https://github.com/komljen/dockerfile-examples/blob/master/postgres/Dockerfile
+
+# vous venez de creer une nouvelle image, lancez un conteneur avec cette image,
+# et vous y trouverez tous les paquets installés tels que listés ds le Dockerfile.
+
+
+# option2:
+# demarrer le conteneur
+$ docker run -ti ubuntu /bin/bash
+root@87e4881973f6:/#
+
+# installer git, emacs, python, pip, d'autres paquets si besoin
+root@87e4881973f6:/# apt install git-core emacs24-nox, python-pip
+
+# installer ansible
+root@87e4881973f6:/# pip install ansible
+
+# recuperer des playbooks sur github, ou ailleurs
+# executer ces playbooks, et vos paquets s'installeront
+
+
+# option3:
+# installer manuellement les paquets que vous voulez
+root@87e4881973f6:/# apt install make
+
+
+# apres avoir fini d'installer vos paquets en utilisant l'option2 ou l'option3
+# il faut sauvegarder l'etat de votre conteneur, autrement toutes les modifs seront perdues
+
+# recuperer l'id de votre conteneur
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                CREATED             STATUS              PORTS                    NAMES
+595fb88d3840        postgresql:latest   "/usr/lib/postgresql   38 minutes ago      Up 38 minutes       0.0.0.0:6000->5432/tcp   tender_tesla"
+
+# sauvegarder
+$ docker commit 595fb user_name/image_name <-- convention
+# vous venez de creer une nouvelle image, en demarrant un conteneur avec cette image, vs retrouvez les paquets installés plus haut option2 ou option3
