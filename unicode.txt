@@ -1,0 +1,125 @@
+Introduction a unicode:
+-----------------------
+
+
+1. tout est octet:
+------------------
+l'informatique moderne ne fonctionne qu'avec des octets.
+on n'envoie pas du texte, on envoie des octets,
+on ne stocke pas du texte, on stocke des octets,
+tout est octet.
+
+
+trois niveaux d'abstraction
+---------------------------
+- display: glyphes, polices
+- texte: code points
+- stockage: octets
+
+
+il a donc fallu que l'on se mette d'accord sur une convention:
+quand je t'envoie cette 'serie d'octets', cela signifie que j'ai voulu dire 'ceci'.
+faire correspondre: 'serie d'octets' --> caracteres comprehensibles par l'homme.
+ceci a donné naissance aux systemes d'encodages; ASCII, ISO-8859-1, Windows-1252, ...
+
+
+2. le monde a besoin de plus de 256 carateres:
+----------------------------------------------
+differents alphabets, caracteres, symboles, a travers le monde.
+
+
+unicode != utf-8:
+-----------------
+unicode: mapping entre le caractere et la description.
+utf-8: mapping entre la description et la serie d'octets.
+
+
+objectif:
+- faire correspondre chaque caractere a un code point
+- associer a chaque code point, une description du caratere
+- faire correspondre au code point, un ou plusieurs octets <= 4
+
+
+exemple:
+
+unicode
+----------------------------------
+a --> U+0061: LATIN SMALL LETTER A --> 01100001
+      -----------------------------------------
+                                          utf-8
+
+l'encodage de caractere dominant: utf-8.
+universal character set transformation format 8 bits
+
+differents 'code points' peuvent avoir differents nombres d'octets,
+contrairement a ASCII où le nombre d'octet etait fixe par caractere: 1,
+U+2602: UMBRELLA, utilise 3 octets.
+
+
+python2
+-------
+- string data types:
+type str, une sequence d'octets
+type unicode, une sequence de code points (prefixe u)
+
+python3
+-------
+- string data types:
+type str, une sequence de code points
+type bytes, une sequence d'octets (prefixe b)
+
+
+illustration 'str' et 'unicode' sous python2
+--------------------------------------------
+>>> euro_octet = '€'
+>>> type(euro_octet)
+<type 'str'>
+>>> len(euro_octet)
+3
+>>>
+>>> euro_unicode = u'\u20ac'
+>>> print(euro_unicode)
+€
+>>> type(euro_unicode)
+<type 'unicode'>
+>>> len(euro_unicode)
+1
+>>>
+
+
+en python2, lorsqu'on parle de string, on pense generalement,
+a bytes string, chaine d'octets.
+
+
+comment passer d'un type a un autre?
+------------------------------------
+>>> my_unicode = u"\u2602"
+>>> len(my_unicode) # my_unicode ne possede qu'un seul caractere
+1
+>>> type(my_unicode) # my_unicode est de type unicode
+<type 'unicode'>
+>>>
+>>> print(my_unicode) # devrait vous afficher un parapluie
+>>> ☂
+>>>
+>>> my_utf8 = my_unicode.encode("utf-8") # encode pour passer de unicode a str
+>>> len(my_utf8) # my_unicode possede trois octets
+3
+>>> type(my_utf8) # my_utf8 est de type str, chaine d'octets
+<type 'str'>
+>>>
+>>> my_utf8
+'\xe2\x98\x82'
+>>>
+>>>
+>>> my_utf8.decode("utf-8") # decode pour passer de str a unicode
+u'\u2602'
+>>>
+
+une maniere de retenir peut etre celle là:
+------------------------------------------
+de str a unicode: become code > be-code > 'decode'
+de unicode a str: not be code > un-code > 'encode'
+
+
+Ressource interessante: sur youtube, "Travis Fischer, Esther Nam: Character encoding and Unicode in Python - PyCon 2014""
