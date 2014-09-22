@@ -1,0 +1,34 @@
+magic methods:
+--------------
+methodes speciales permettant d'ajouter de la magie, 
+aux classes que nous definissons. elles commencent 
+et se terminent par deux underscores: __init__, __lt__
+
+lorsque l'on ecrit p = Personne(), la permiere methode 
+invoquée est la methode __new__, cette methode va creer 
+l'instance p
+
+__new__ est la premiere 'magic method' a etre invoquée. 
+rarement utilisée, elle est pourtant utile pr definir 
+un nouveau type heritant d'un type immuable
+
+__init__ est la deuxieme magic method a etre invoquée. 
+initialise l'instance avec les arguments passés en parametre, 
+lors de l'appel p = Personne(10, foo), __init__ recevra 10 et foo 
+en arguments
+
+__del__ destructeur de l'instance. la convention demande de ne 
+jamais s'en servir parce qu'on ne sait jamais vraiment quand 
+cette methode sera invoquée. son role est de definir le comportement 
+au moment où l'instance sera nettoyée par le garbage collector
+
+surcharge d'operateurs: permettre a une classe de definir son propre 
+comportement, tout en respectant les operateurs du langage
+exemple: l'operateur + invoque la methode __add__
+
+>>> a, b = 1, 2
+>>> a + b
+3
+>>> a.__add__(b)
+3
+
