@@ -1,0 +1,45 @@
+Git est un outil parfois tres etrange.
+Je ne chercherai pas a le maitriser, juste a m'en servir du mieux que je peux.
+En bas, une liste de problemes/soucis avec la solution correspondante.
+
+Erreur:
+-------
+Your configuration specifies to merge with the ref 'master'
+from the remote, but no such ref was fetched.
+
+J'ai eu cette erreur apres avoir fait un git pull.
+Git ne savait pas a partir de quelle url il doit faire le pull.
+
+Solution:
+---------
+editer le fichier .git/config
+et ajouter la ligne 'remote = origin' dans la section branch "master"
+
+[branch "master"]
+        remote = origin
+
+Souci:
+------
+Ne pousser que certains commits.
+J'ai une longue liste de commits en local,
+je veux git push une partie de ces commits.
+
+Solution a:
+-----------
+$ git push origin master~3:master
+
+Solution b:
+-----------
+$ git checkout -b tocommit HEAD~3
+$ git push origin tocommit:master
+
+Solution c:
+-----------
+$ git checkout -b tocommit
+$ git checkout master
+$ git merge tocommit~3
+$ git push origin master:master
+
+Solution d:
+-----------
+$ git push SHA:master
