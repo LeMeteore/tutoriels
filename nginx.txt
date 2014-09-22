@@ -1,0 +1,47 @@
+proxy:
+------
+quelqu'un ou quelque chose, 
+agissant au nom de quelqu'un d'autre, 
+ou quelque chose d'autre.
+
+il s'agit generalement d'un serveur, 
+agissant au nom d'un ordinateur
+
+forward proxy (Y):
+------------------
+aulieu de: X --> Z
+on aura: X --> Y --> Z
+avec X:
+- sachant bien qu'il accede a Z en passant par Y
+- necessitant une configuration particuliere de son cote.
+avec Z:
+- n'ayant aucune connaissance de Y
+
+exemples d'utilisations:
+------------------------
+
+
+reverse proxy (Y):
+------------------
+aulieu de: X --> Z
+on aura: X --> Y --> Z
+avec X:
+- ne sachant pas qu'il passe par Y pr acceder a Z
+- ne necessitant aucune configuration particuliere de son cote.
+avec Z:
+- ayant choisi/configuré Y
+
+exemples d'utilisations:
+------------------------
+
+
+On peut resumer ainsi:
+le forward proxy agit au nom du client qui consomme le service
+le reverse proxy agit au nom du serveur qui offre le service
+
+
+nginx:
+------
+un reverse proxy en premier, un serveur http en second. 
+En effet, la premiere chose importante pr nginx, ce sont les urls, 
+et non les fichiers.
