@@ -1,0 +1,64 @@
+portée (d'une variable):
+------------------------
+endroits du programme ou l'association "nom variable --> valeur variable",
+est valide. exemple:
+
+>>> def ajouter(a,b):
+>>>   c = 5
+>>>   print(5)
+>>>   return "{0} + {1} egal {3}".format(a,b,a+b)
+>>>
+>>> ajouter(1,2)
+5
+'1 + 2 egal 3'
+>>>
+>>> print(c)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'c' is not defined
+>>>
+
+on a reussi a afficher la valeur de c, en etant a l'interieur de la fonction.
+on dit que la portee de c est limitée au bloc de la fonction ajouter.
+
+closure:
+--------
+une closure est créée, entre autres, lorsqu'une fonction2,
+définie dans une fonction1 fait reference, a des variables,
+locales à la fonction1.
+
+Une closure est créée pr permettre l’inclusion dans la définition,
+d’une fonction d’une variable de portée supérieure.
+Dans l'exemple qui suit, une closure est créée,
+pr permettre a la fonction ajoute, d'acceder a la valeur de n
+
+>>> def ajouteur(n):
+...   def ajoute(v):
+...     return v + n
+...   return ajoute
+...
+>>> ajoute10 = ajouteur(10)
+>>> ajoute10(5)
+15
+>>>
+
+la variable de portee superieure ne peut etre modifiee.
+elle est passée en lecture seule
+
+>>> def ajouteur(n):
+...   def ajoute(v):
+...     n += 1
+...     return v + n
+...   return ajoute
+...
+>>> ajoute10 = ajouteur(10)
+>>> ajoute10(1)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "closure.py", line 6, in ajoute
+    n +=1
+UnboundLocalError: local variable 'n' referenced before assignment
+>>>
+
+utilité de tout cela? les decorateurs, le currying: creation de fonctions,
+specialisées a partir de fonctions generiques, comme ds l'exemple plus haut
