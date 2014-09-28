@@ -1,0 +1,188 @@
+Exception:
+----------
+Une exception est un evenement survenant durant l'execution d'un programme.
+Cet evenement, interrompt l'evolution normale du programme.
+
+Lorsqu'une exception se produit,
+la methode dans laquelle l'evenement est arrivé, va creer un objet.
+Cet objet contient l'erreur, son type, l'etat du programme lorsque l'erreur s'est produite.
+L'objet, l'exception ainsi créée sera passée au systeme d'execution.
+
+Une fois passée au systeme d'execution,
+il faut pouvoir "traiter" l'exception, et eviter un plantage systeme.
+
+
+Exemple1:
+---------
+voici une fonction toute simple, enregistrée dans le script main.py:
+
+import sys
+
+def main():
+    filename = sys.argv[1]
+    # instruction pouvant lever une exception
+    f = open(filename)
+
+if __name__ == "__main__":
+   main()
+
+
+Dans une console, on va executer le code:
+
+5@k:~  > ./main.py .bashrc
+5@k:~  >
+
+
+Tant que le fichier passé en argument existe, tout ira bien.
+Dès que le fichier passé en argument n'existe pas:
+
+
+5@k:~  > ./main.py text.txt
+Traceback (most recent call last):
+  File "./main.py", line 69, in <module>
+    main()
+  File "./main.py", line 9, in main1
+    f = open(filename)
+IOError: [Errno 2] No such file or directory: 'text'
+5@k:~  >
+
+
+Le processus d'execution s'arrete,
+et tente de nous indiquer ce qui ne va pas.
+Le probleme se trouve au niveau de la ligne 9
+
+
+Exemple2:
+---------
+Modifions la fonction main et inserons cette ligne dans un bloc try:
+
+def main():
+    filename = sys.argv[1]
+    try:
+        f = open(filename)
+
+    # capturer toutes les exceptions
+    except:
+        print >> sys.stderr, "le fichier n'existe pas: ", filename
+        sys.exit(1)
+
+
+5@k:~  > ./main.py text.txt
+le fichier n'existe pas:  text.txt
+5@k:~  >
+
+Le code se trouvant dans le bloc except sera executé si jamais une exception,
+n'importe laquelle, est levée. Dans notre cas, on affiche un message,
+ce message nous indiquant que le fichier n'existe pas.
+
+
+Exemple3:
+---------
+Comment gerer differents types d'exceptions
+Le code suivant risque de lever deux types differents d'exceptions:
+
+def main():
+    f = open(filename) # exception si fichier inexistant
+    y = 1/0 # exception de type division par zero
+
+
+Pour capturer differents types d'exceptions,
+il suffit d'ecrire plusieurs blocs except:
+
+
+def main():
+    filename = sys.argv[1]
+    try:
+        f = open(filename)
+        y = 1/0
+
+    # capturer toutes les exceptions de type IOError
+    except IOError:
+        print >> sys.stderr, "le fichier n'existe pas: ", filename
+        sys.exit(1)
+
+    # capturer les exceptions dans le cas d'une division par zero
+    except ZeroDivisionError:
+        print >> sys.stderr, "division par zero interdite"
+        sys.exit(1)
+
+Dans l'exemple precedent, on definit un traitement si jamais une exception de type IOError est levée,
+et un autre traitement si jamais une exception de type ZeroDivisionError est levée.
+
+
+Exemple4:
+---------
+Il est egalement possible de recuperer l'objet de type exception.
+Et de jouer avec:
+
+def main():
+    filename = sys.argv[1]
+    try:
+        f = open(filename)
+
+    # capturer ttes exceptions de type IOError, et recuperer l'objet
+    except IOError, e:
+        print '****'
+        print "args: ", e.args
+        print "errno: ", e.errno
+        print "filename: ", e.filename
+        print "message: ", e.message
+        print "strerror: ", e.strerror
+        print '****'
+        print >> sys.stderr, e.strerror,": ", e.filename
+        sys.exit(1)
+
+
+
+Exemple5:
+---------
+Jusque là, les instructions ecrites peuvent se lire ainsi:
+"Effectue ces actions. S'il y a une erreur à l’intérieur, traite-la comme ceci."
+
+On peut modifier notre fonction de maniere a dire ceci:
+"Effectue ces actions. S'il y a une erreur à l’intérieur, traite-la comme ceci, s'il n'y a pas d'erreur, fais plutot cela"
+
+
+def main():
+    filename = sys.argv[1]
+    try:
+        f = open(filename)
+
+    # capturer toutes les exceptions de type IOError
+    except IOError:
+        print >> sys.stderr, "le fichier n'existe pas: ", filename
+        sys.exit(1)
+
+    # executer ce bloc si aucune exception n'est levée
+    else:
+        print "le fichier a ete ouvert avec succes", filename
+
+
+Exemple6:
+---------
+utilisation de la clause finally, ou comment s'assurer qu'une instruction sera toujours executée, quoi qu'il arrive.
+Ce bloc est generalement utilisé pour effectuer des operations de nettoyage, comme par exemple fermer une connection.
+
+
+def main5():
+    filename = sys.argv[1]
+    try:
+        f = open(filename)
+
+    # capturer toutes les exceptions de type IOError
+    except IOError:
+        print >> sys.stderr, "le fichier n'existe pas: ", filename
+        sys.exit(1)
+
+    # executer ce bloc si aucune exception n'est capturée
+    else:
+        print "le fichier a ete ouvert avec succes", filename
+
+    finally:
+        print "cette instruction sera toujours executée"
+
+
+
+Ressources a parcourir:
+-----------------------
+https://docs.python.org/3.4/reference/compound_stmts.html#the-try-statement
