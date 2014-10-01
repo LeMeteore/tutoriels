@@ -1,0 +1,209 @@
+Les iterateurs:
+---------------
+
+iterable:
+objet pouvant etre utilisé avec/dans une boucle for
+
+"iterable" est une chaine de caractere,
+une chaine de caractere est un iterable, exemple:
+
+>>> for c in "iterable":
+...   print c
+...
+i
+t
+e
+r
+a
+b
+l
+e
+>>>
+
+iterateur:
+----------
+objet qui prend en parametre un iterable,
+et permettant de renvoyer le prochain element
+de cet iterable, si cet elt existe, autrement,
+il leve une exception. exemple:
+
+>>> x = iter("iterable")
+>>> x.next()
+'i'
+>>> x.next()
+'t'
+>>> x.next()
+'e'
+>>> x.next()
+'r'
+>>> x.next()
+'a'
+>>> x.next()
+'b'
+>>> x.next()
+'l'
+>>> x.next()
+'e'
+>>> x.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
+
+Pr qu'un objet soit iterable,
+il doit implementer la methode __iter__,
+il doit egalement implementer la methode next,
+et enfin, il doit lever une exception StopIteration,
+lorsqu'il n'y a plus de prochain element. exemple:
+
+>>> class Personne:
+...   def __init__(self):
+...     self.i = 0
+...   def __iter__(self):
+...     return self
+...   def next(self):
+...     if self.i == 0: self.i +=1; return "jeune"
+...     elif self.i == 1: self.i +=1; return "adulte"
+...     elif self.i == 2: self.i +=1; return "vieux"
+...     else: raise StopIteration()
+...
+>>> p = Personne()
+>>> p.next()
+'jeune'
+>>> p.next()
+'adulte'
+>>> p.next()
+'vieux'
+>>> p.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 10, in next
+StopIteration
+>>>
+
+Plusieurs built-in fonctions acceptent des iterateurs
+en argument. exemples avec les fonctions list, map et len:
+
+>>> list(Personne())
+['jeune', 'adulte', 'vieux']
+>>>
+>>> map(lambda x: len(x), Personne())
+[5, 6, 5]
+>>>
+>>> map(lambda x: x.capitalize(), Personne())
+['Jeune', 'Adulte', 'Vieux']
+>>>
+
+Les generateurs:
+----------------
+Un generateur est construit en appelant une fonction,
+ayant une ou plusieurs expressions yield
+
+Les generateurs sont des iterateurs, car ils implement
+les fonctions __iter__ et next.
+
+mais les iterateurs ne sont pas des generateurs.
+parce que n'ayant aucune expressions yield.
+
+Une comparaison vaut mieux que mille paroles:
+aires est une fonction, un generateur generant,
+des surfaces (carrées):
+
+>>> def aires(start, stop):
+...     for i in xrange(start, stop):
+...         yield i * i
+...
+>>> S = aires(1,4)
+>>> S.next()
+1
+>>> S.next()
+4
+>>> S.next()
+9
+>>> S.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
+
+Meme exemple en utilisant une generator expression:
+
+>>> S = (i*i for i in xrange(1, 4))
+>>> S.next()
+1
+>>> S.next()
+4
+>>> S.next()
+9
+>>> S.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
+
+Meme exemple en utilisant un iterateur:
+
+>>> class Aires(object):
+...     def __init__(self, start, stop):
+...        self.start = start
+...        self.stop = stop
+...     def __iter__(self): return self
+...     def next(self):
+...        if self.start >= self.stop:
+...            raise StopIteration
+...        current = self.start * self.start
+...        self.start += 1
+...        return current
+...
+>>>
+>>> S = Aires(1,4)
+>>> S.next()
+1
+>>> S.next()
+4
+>>> S.next()
+9
+>>> S.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 8, in next
+StopIteration
+>>>
+>>>
+
+Inutile de dire que la version utilisant le generateur,
+est plus courte, plus simple, plus concise.
+
+Le seul avantage de la version utilisant l'iterateur,
+est que l'on peut apporter plus de complexité et de personnalisation,
+en ajoutant a la classe Aires, d'autres methodes/attributs.
+
+
+>>> def foo():
+...   print "begin"
+...   for i in range(3):
+...     print "before yield", i
+...     yield i
+...     print "after yield", i
+...   print "end"
+...
+>>> f = foo()
+>>> f.next()
+begin
+before yield 0
+0
+>>> f.next()
+after yield 0
+before yield 1
+1
+>>> f.next()
+after yield 1
+before yield 2
+2
+>>> f.next()
+after yield 2
+end
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
