@@ -36,12 +36,12 @@ l'operateur + invoque la methode __add__
 3
 
 Grace aux 'magic methods', on peut definir des "comportements".
-Et ainsi, masquer de la logique a l'utilisateur finale de la classe ou de la lib.
+Et ainsi, masquer de la logique a l'utilisateur final de la classe ou de la lib.
 
 impossible de presenter toutes les "magic methods" dans ce post,
 voyons juste un exemple tres simple.
 
-enregistrer dans le code suivant dans le fichier magic.py:
+enregistrer le code suivant dans le fichier magic.py:
 
 class Longueur:
 
