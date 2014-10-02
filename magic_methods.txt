@@ -1,30 +1,33 @@
 magic methods:
 --------------
-methodes speciales permettant d'ajouter de la magie, 
-aux classes que nous definissons. elles commencent 
+methodes speciales permettant d'ajouter de la magie,
+aux classes que nous definissons. elles commencent
 et se terminent par deux underscores: __init__, __lt__
 
-lorsque l'on ecrit p = Personne(), la permiere methode 
-invoquée est la methode __new__, cette methode va creer 
+lorsque l'on ecrit p = Personne(), la permiere methode
+invoquée est la methode __new__, cette methode va creer
 l'instance p
 
-__new__ est la premiere 'magic method' a etre invoquée. 
-rarement utilisée, elle est pourtant utile pr definir 
+__new__ est la premiere 'magic method' a etre invoquée.
+rarement utilisée, elle est pourtant utile pr definir
 un nouveau type heritant d'un type immuable
 
-__init__ est la deuxieme magic method a etre invoquée. 
-initialise l'instance avec les arguments passés en parametre, 
-lors de l'appel p = Personne(10, foo), __init__ recevra 10 et foo 
+__init__ est la deuxieme magic method a etre invoquée.
+initialise l'instance avec les arguments passés en parametre,
+lors de l'appel p = Personne(10, foo), __init__ recevra 10 et foo
 en arguments
 
-__del__ destructeur de l'instance. la convention demande de ne 
-jamais s'en servir parce qu'on ne sait jamais vraiment quand 
-cette methode sera invoquée. son role est de definir le comportement 
+__del__ destructeur de l'instance. la convention demande de ne
+jamais s'en servir parce qu'on ne sait jamais vraiment quand
+cette methode sera invoquée. son role est de definir le comportement
 au moment où l'instance sera nettoyée par le garbage collector
 
-surcharge d'operateurs: permettre a une classe de definir son propre 
+surcharge d'operateurs: permettre a une classe de definir son propre
 comportement, tout en respectant les operateurs du langage
-exemple: l'operateur + invoque la methode __add__
+
+exemple:
+--------
+l'operateur + invoque la methode __add__
 
 >>> a, b = 1, 2
 >>> a + b
@@ -32,3 +35,100 @@ exemple: l'operateur + invoque la methode __add__
 >>> a.__add__(b)
 3
 
+Grace aux 'magic methods', on peut definir des "comportements".
+Et ainsi, masquer de la logique a l'utilisateur finale de la classe ou de la lib.
+
+impossible de presenter toutes les "magic methods" dans ce post,
+voyons juste un exemple tres simple.
+
+enregistrer dans le code suivant dans le fichier magic.py:
+
+class Longueur:
+
+    __metric = {"mm" : 0.001, "cm" : 0.01, "m" : 1, "km" : 1000,
+                "in" : 0.0254, "ft" : 0.3048, "yd" : 0.9144,
+                "mi" : 1609.344 }
+
+    def __init__(self, valeur, unite = "m" ):
+        self.valeur = valeur
+        self.unite = unite
+
+    def ConvertirEnMetres(self):
+        return self.valeur * Longueur.__metric[self.unite]
+
+    def __add__(self, longueur):
+        l = self.ConvertirEnMetres() + longueur.ConvertirEnMetres()
+        return Longueur(l / Longueur.__metric[self.unite], self.unite )
+
+    def __sub__(self, longueur):
+        l = self.ConvertirEnMetres() - longueur.ConvertirEnMetres()
+        return Longueur(l / Longueur.__metric[self.unite], self.unite )
+
+    def __gt__(self, longueur):
+        return self.ConvertirEnMetres() > longueur.ConvertirEnMetres()
+
+    def __lt__(self, longueur):
+        return self.ConvertirEnMetres() < longueur.ConvertirEnMetres()
+
+    def __ge__(self, longueur):
+        return self.ConvertirEnMetres() >= longueur.ConvertirEnMetres()
+
+    def __le__(self, longueur):
+        return self.ConvertirEnMetres() <= longueur.ConvertirEnMetres()
+
+    def __eq__(self, longueur):
+        return self.ConvertirEnMetres() == longueur.ConvertirEnMetres()
+
+    def __str__(self):
+        return str(self.ConvertirEnMetres())
+
+    def __repr__(self):
+        return "Longueur(" + str(self.valeur) + ", '" + self.unite + "')"
+
+
+if __name__ == "__main__":
+    x = Longueur(4)
+    print(x)
+    print(repr(x))
+
+    print("---")
+    y = eval(repr(x))
+    w = y + x
+    print(w)
+    print(repr(w))
+
+    print("---")
+    z = Longueur(4.5, "yd") + Longueur(1)
+    print(z)
+    print(repr(z))
+
+    print("---")
+    print(x < y)
+    print(x > y)
+    print(x <= y)
+    print(x == z)
+
+executer le script dans une console, vous devriez obtenir ceci:
+---------------------------------------------------------------
+
+5@k:~  > python magic.py
+4
+Longueur(4, 'm')
+---
+8
+Longueur(8, 'm')
+---
+3.1148
+Longueur(3.40638670166, 'yd')
+---
+False
+False
+True
+False
+5@k:~  >
+
+
+Ressources:
+-----------
+- http://farmdev.com/src/secrets/magicmethod/index.html#getting-started
+- http://www.rafekettler.com/magicmethods.html#intro
