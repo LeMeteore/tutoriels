@@ -43,3 +43,16 @@ $ git push origin master:master
 Solution d:
 -----------
 $ git push SHA:master
+
+Souci:
+------
+git ne me dit pas de combien de commits je suis en avance/retard.
+Pas encore bien saisi, mais ça doit etre parce qu'il ne sait pas,
+quel est le upstream.
+
+Solution:
+---------
+changer la valeur de remote. Remplacer le '.' par le nom du upstream.
+[branch "ppv"]
+        remote = origin
+        merge = refs/heads/ppv
