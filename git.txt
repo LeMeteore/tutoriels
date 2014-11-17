@@ -56,3 +56,18 @@ changer la valeur de remote. Remplacer le '.' par le nom du upstream.
 [branch "ppv"]
         remote = origin
         merge = refs/heads/ppv
+
+Souci:
+------
+Mon espace de travail n'a aucune modification, et pourtant git se plaint:
+
+error: Your local changes to the following files would be overwritten by merge:
+        fichier.txt
+Please, commit your changes or stash them before you can merge.
+Aborting
+
+Solution:
+---------
+j'avais fait un git update-index --assume-unchanged fichier.txt
+il fallait donc faire un git update-index --no-assume-unchanged fichier.txt,
+et ensuite faire ou un commit, ou un stash, ou un checkout.
