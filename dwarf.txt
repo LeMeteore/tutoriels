@@ -1,0 +1,82 @@
+requirements:
+-------------
+Flask==0.10.1
+Jinja2==2.7.1
+Markdown==2.3.1
+MarkupSafe==0.18
+Werkzeug==0.9.4
+argparse==1.2.1
+itsdangerous==0.23
+wsgiref==0.1.2
+
+
+content_load:
+-------------
+fonction qui prend en parametre un chemin vers un fichier,
+ouverture du fichier en lecture seule,
+lecture du contenu du fichier,
+retourne le contenu du fichier lu, du md
+
+
+content_list:
+-------------
+fonction permettant de recuperer une liste.
+la liste des meta données pour chaque fichier contenu
+dans un repertoire donné.
+
+creation d'un objet de type md,
+listing du contenu du repertoire dont le nom a ete passé en parametre,
+pour chacun des fichiers persent ds le repertoire passé en parametre,
+- recuperer le contenu du fichier,
+- former le html
+- recuperer les meta données
+- si date parmi les clés de meta,
+  - reecrire la valeur liee a la cle date ds meta
+- si pas de cle slug ds meta,
+  - en creer une avec le nom du fichier courant
+
+
+_md_meta_to_dict:
+-----------------
+fonction chargée de prendre un objet md,
+et de nous renvoyer un dictionnaire contenant les metadonnées du md,
+le underscore indique cette fonction ne peut etre importée
+
+
+_jinja2_filter_datetime:
+------------------------
+fonction utilisée pour prendre une chaine de caractere representant
+une date, et la transformer en objet date valide. la valeur retournée,
+est une chaine de caractere ayant un format valide et reconnu par python.
+
+la fonction est decorée pour devenir un filtre de template custom.
+un filtre de template permet d'appliquer certaines transformation a une
+variable dans un template.
+
+
+page_not_found:
+---------------
+fonction decorée qui sera utilisée en cas d'une erreur 404,
+recuperer le contenu specialement ecrit pour les erreurs 404,
+transformer le tout en html
+faire le rendu dans la vue page.tpl.html
+
+
+blogpost:
+---------
+fonction prenant en parametre une chaine de caractere,
+creer un objet de type md avec des meta données,
+recuperer ds un fichier, le md a formatter en fonction de l'argument slug,
+former le html, en fonction du md lu ds le fichier,
+recuperer les meta données du md,
+creer un dictionnaire contenant, meta, et html correspondant,
+rendre le tout dans un template
+
+
+index:
+------
+fonction invoquée si l'url demandée est '/' ou alors '/page/<int:page>',
+page est une variable, dans laquelle sera stoquée l'entier trouvé ds l'url
+recuperation de tous les meta de tous les md, dans le repertoire blog,
+classement de ces meta en fonction de la date,
+recuperation du nombre total de meta,
