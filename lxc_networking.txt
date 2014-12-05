@@ -1,0 +1,40 @@
+# ajouter un bridge
+# apt-get install bridge-utils
+# editer /etc/networking/interfaces
+
+# auto br0
+# iface br0 inet dhcp
+#     bridge_ports      eth0
+#     bridge_stp        off
+#     bridge_maxwait    0
+#     bridge_fd         0
+
+
+# verifier existence du bridge
+# ifconfig -a br0
+
+# eventuellement, redemarrer le service
+# service networking restart
+# ou alors, demander une ip
+# dhclient br0
+
+# editer la config de la vm /var/lib/lxc/config
+# mettre a jr la config reseau
+# networking
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = br0
+# mac address could be something random
+# start w/ 00
+lxc.network.hwaddr = 00:11:22:33:44:55 
+# une ip etant sur le meme reseau la machine hote
+lxc.network.ipv4 = 192.168.1.35/24
+
+# start vm
+# lxc-start --name vm1
+
+# add gateway to the bridge ip
+# jai ajouté comme gw, l'ip de mon routeur et ça marche, curieusement
+# route add default gw 192.168.1.1
+
+# vm is now linked to the host
