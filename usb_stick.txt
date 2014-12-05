@@ -1,0 +1,38 @@
+# on est en mode console et on est root
+
+# detecter les disques montés
+# df
+# bien noter la liste1
+# brancher la clé
+# refaire un df
+# demonter le device qui n'etait pas la liste1
+# umount /dev/sdb* ou umount /dev/sdd* (en fct)
+
+# parfois, un ls /dev peut aider a mieux voir,
+# quand par exemple, la cle n'est pas automatiquement montée
+# un fdisk tabulation peut aussi vs aider a reperer les eventuels
+# disques susceptibles presents mais pas montés
+
+# lancer l'utilitaire de partitionnement
+# fdisk /dev/sdb
+# l'assistant est assez precis et sympa
+# creer une partion principale, une etendue, une logique
+# veiller a choisir fat32 comme systeme de fichiers
+# ecrire la nouvelle table de partition
+# w
+
+# formatter le disque
+# si votre partition logique est /dev/sdb5
+# mkfs.vfat -F 32 /dev/sdb5
+
+# liste des disques montés
+# mount
+
+# monter votre cle, le repertoire /media/stick doit exister
+# mount -t auto -o rw,user /dev/sdb5 /media/stick
+# et transferez vos données
+
+# pour la transformer en disque bootable,
+# demonter la cle, umount /dev/sdd*
+# ecrire l'image sur le disque
+# dd bs=4M if=/home/nsukami/Téléchargements/2014-09-09-wheezy-raspbian.img of=/dev/sdc; sync
