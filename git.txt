@@ -71,3 +71,22 @@ Solution:
 j'avais fait un git update-index --assume-unchanged fichier.txt
 il fallait donc faire un git update-index --no-assume-unchanged fichier.txt,
 et ensuite faire ou un commit, ou un stash, ou un checkout.
+
+Souci:
+------
+Ne vouloir ajouter que certaines modifications d'un fichier, pas toutes.
+
+Solution:
+---------
+git add -i filename.
+un shell special apparaitra, il est assez intuitif.
+En gros, il faut, patch, selectionner un fichier,
+eventuellement choisir les morceaux a ajouter, etc ...
+
+Souci:
+------
+Vouloir renommer un fichier.
+
+Solution:
+---------
+git mv
