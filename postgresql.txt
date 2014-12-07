@@ -1,0 +1,79 @@
+Procedure pour installer postgresql sur une debian,
+La derniere version 9.3, ne sera pas installée si le kernel est a la version 3.2 :(
+alternative, installer la version 9.1
+
+# Get 9.3 on ubuntu < 14.04
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
+#      sudo apt-key add -
+#      sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | \
+#           sudo tee /etc/apt/sources.list.d/pgdg.list
+#           sudo apt-get update
+
+# Install on any Ubuntu
+# sudo apt-get install -y postgresql postgresql-contrib
+
+modifier le fichier de configuration de postgresql, pour permettre les connections distantes
+ceci n'est strictement pas conseillé sur une machine de production
+
+# sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" \
+#      /etc/postgresql/9.3/main/postgresql.conf
+
+l'utilisateur pouvant se connecter a la console postgresql: postgres
+apres une nouvelle installation, cet utilisateur sera créé
+Cet utilisateur sera utilisé pour une connection via la console
+
+# # Switch to user "postgres"
+# sudo su postgres
+
+# # Enter psql, the CLI tool for Postgres
+# psql
+
+Pour se connecter depuis une appli web,
+il est preferable de créer un autre utilisateur.
+
+# créer un utilisateur systeme
+# useradd tom
+# definir son mot de passe
+# passwd tom
+
+ensuite, il faut creer un utilisateur au niveau de postgresql,
+cet utilisateur correspondra a l'utilisateur systeme créé plus haut
+
+# se connecter en tant que postgres
+# sudo su postgres
+# creer un utilisateur correspondant a tom
+# createuser -P tom
+
+# on peut creer un nouvel utilisateur en envoyant une requete sql au moteur
+# toujours avec l'utilisateur system postgres
+# psql -c "CREATE ROLE myloginuser LOGIN UNENCRYPTED PASSWORD 'somepassword' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+
+# juste au cas ou, pour modifier le password d'un user
+# psql -c "psql -c "alter user myloginuser with password 'somepassword';"
+
+# creer une base de donnée pour le nouvel utilisateur
+# en tant que user postgres, via la console shell
+# createdb --owner=tom tom_database
+
+
+-------------------
+IMPORTANT A SAVOIR:
+-------------------
+
+peer authentication:
+--------------------
+postgres demandera au systeme hote le login et s'en servira pour l'authentification.
+Cela signifie que pour se connecter en tant que tom en utilisant le peer authentication,
+il faut d'abord se connecter au systeme en tant que tom, puis se connecter a postgresql
+
+Pour pouvoir se connecter a postgresql en tant que tom,
+alors que l'on est connecté avec un utilisateur systeme qui n'est pas tom,
+
+# psql -U tom -h localhost -W
+
+Ceci est possible grace a une ligne ds le fichier /etc/postgresql/version/main/pg_hba.conf
+# host    all             all             127.0.0.1/32            md5
+
+Ce qui signifie grossierement: tous les utilisateurs ont le droit de se connecter a ttes les bdd,
+en utilisant une connection tcp (et non via unix socket), sur le localhost:127.0.0.1/32,
+le mot de passe sera demandé et pas envoyé en clair grace a md5.
