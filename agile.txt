@@ -1,0 +1,87 @@
+agile:
+------
+travail est divisé en cycles, reguliers et repetitifs: les sprints ou iterations.
+ces sprints sont determinés durant le planning meeting.
+
+les differents acteurs:
+-----------------------
+
+a. product owner:
+-----------------
+responsable du projet. pilote le travail, definit les priorités, en fonction du client, 
+mais aussi en fonction de l'equipe. intermediaire entre le client et l'equipe.
+s'assure que l'equipe a tout ce dont elle a besoin pr travailler efficacement.
+
+b. scrum master:
+----------------
+veille a ce que le product owner et l'equipe puisse effectuer le travail dans de bonne conditions. 
+en charge de retirer tout ce qui est bloquant pour l'equipe, tout ce qui empeche une bonne progression.
+
+c. team member:
+---------------
+chargé de faire un travail, d'eliminer une tache.
+il peut etre ingenieur logiciel, architecte, programmeur, analyste, testeur, designer, ...
+
+
+
+le processus:
+-------------
+
+1. sprint planning meeting:
+---------------------------
+duree maximum de 4h. 
+le product owner discute avec l'equipe, et choisissent ensemble quelles user stories ils vont mettre dans le sprint backlog. 
+le product owner determine le travail a faire, l'equipe determine comment le travail sera fait.
+
+2. sprint:
+----------
+periode de travail, de 2 a 4 semaines, la durée d'un sprint est decidée par l'equipe. 
+durant le sprint on developpe un seul livrable, peu importe sa taille. 
+durant le sprint, aucun autre travail n'est donné/demandé a l'equipe.
+un sprint peut etre annulé.
+
+3. daily standup:
+-----------------
+durant le sprint, de maniere quotidienne, l'equipe se rencontre et doit repondre aux questions:
+- qu'est ce que j'ai fait hier?
+- qu'est ce que je compte faire aujourd'hui?
+- qu'est ce qui m'empeche de progresser?
+
+4. sprint review meeting:
+-------------------------
+durant cette reunion, le travail est présenté par l'équipe au product owner. 
+ce dernier determine si le travail est satisfaisant ou non.
+
+
+definitions:
+------------
+
+product backlog:
+----------------
+liste de fonctionnalités désirées pr le produit et classées par ordre de priorité.
+cette liste peut changer plus on en sait sur le produit et ses utilisateurs. 
+on y trouve egalement, une liste de bugs, de travail technique a effectuer, de connaissance a acquerir.
+ces differentes entités sont exprimées sous forme de "user stories".
+
+sprint backlog:
+---------------
+liste de "user stories" piochées dans le product backlog et qui seront implementées durant le sprint.
+une fois ces "user stories" dans le sprint backlog, l'equipe dev divise le tout en tache le plus atomiques possible. 
+Cette operation (division en taches) ne doit pas depasser 4h.
+
+user stories:
+-------------
+description simple et courte d'une fonctionnalité, du point de vue de l'utilisateur.
+de maniere conventionnelle, on aura: "en tant que ..., je voudrais ..., afin de pouvoir ..." 
+
+exemples de user stories:
+- en tant que visiteur du site, je veux revoir les objets dans mon panier afin de valider l'achat. 
+- installer et configurer un environnement de developpement
+- rechercher/etudier differentes framework et faire un choix 
+- equiper tous les developpeurs de lenovo thinkpad x1 carbon
+
+release:
+--------
+ensemble de fonctionnalités a livrer. 
+une release est obtenue au bout de plusieurs sprints. 
+il est donc important de bien definir, combien de sprints, et quels livrables par sprints.
