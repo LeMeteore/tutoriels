@@ -66,6 +66,12 @@ postgres demandera au systeme hote le login et s'en servira pour l'authentificat
 Cela signifie que pour se connecter en tant que tom en utilisant le peer authentication,
 il faut d'abord se connecter au systeme en tant que tom, puis se connecter a postgresql
 
+Ceci est possible grace a une ligne ds le fichier /etc/postgresql/version/main/pg_hba.conf
+local   all             all                                     peer
+
+grossierement: tous les utilisateurs, ont le droit de se connecter a ttes les bdd,
+en utilisant des unix sockets, et en utilisant le peer authentication.
+
 Pour pouvoir se connecter a postgresql en tant que tom,
 alors que l'on est connecté avec un utilisateur systeme qui n'est pas tom,
 
@@ -77,3 +83,30 @@ Ceci est possible grace a une ligne ds le fichier /etc/postgresql/version/main/p
 Ce qui signifie grossierement: tous les utilisateurs ont le droit de se connecter a ttes les bdd,
 en utilisant une connection tcp (et non via unix socket), sur le localhost:127.0.0.1/32,
 le mot de passe sera demandé et pas envoyé en clair grace a md5.
+
+le shell psql:
+--------------
+
+postgres=# \list
+List of databases
+Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+-----------+----------+----------+-------------+-------------+-----------------------
+postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+          |          |          |             |             | postgres=CTc/postgres
+template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+          |          |          |             |             | postgres=CTc/postgres
+wappa     | wappa    | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+(4 rows)
+
+postgres=#
+
+Les bases de données template1 et template0 sont des bases de données qui serviront de
+modèles chaque fois que l'on tapera la commande createdb ou la commande create database.
+
+Ces bases sont "copiées", chaque fois que l'on crée une base de donées. Heum, par defaut,
+c'est template1 qui est copiée, mais l'on peut preciser laquelle des deux utiliser pour la
+copie
+
+# CREATE DATABASE dbname TEMPLATE template0; -- depuis une console psql
+# createdb -T template0 dbname # depuis le shell linux
