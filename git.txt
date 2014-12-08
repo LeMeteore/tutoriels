@@ -90,3 +90,20 @@ Vouloir renommer un fichier.
 Solution:
 ---------
 git mv
+
+Souci: Your branch and 'origin/master' have diverged:
+-----------------------------------------------------
+diverge est assez parlant je pense. ce qui arrive souvent
+quand par exemple, quelqu'un a fait un push sur le depot.
+ou bien quand j'ai fait un git commit --amend, alors que
+j'ai deja fait git push du commit que je suis entrain de amend :(
+
+Solution:
+---------
+git merge origin/master pour fusionner le upstream avec le local,
+et creer un commit resultant du merge.
+
+git rebase origin/master pour appliquer les modifications en local,
+sur les modifications en upstream. Autre topo: git pull --rebase,
+grossierement: "applique mes modifs au dessus de celles qui sont en upstream
+apres avoir fait un pull"
