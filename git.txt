@@ -107,3 +107,14 @@ git rebase origin/master pour appliquer les modifications en local,
 sur les modifications en upstream. Autre topo: git pull --rebase,
 grossierement: "applique mes modifs au dessus de celles qui sont en upstream
 apres avoir fait un pull"
+
+Souci:
+------
+Je veux voir un diff complet, et pas seulement les fichiers modifiés,
+a l'interieur de mon template de commit.
+
+Solution:
+---------
+git commit --verbose
+je peux alors ecrire mon message de commit en voyant exactement
+ce que j'ai modifié et ainsi me souvenir de quoi/pourquoi.
