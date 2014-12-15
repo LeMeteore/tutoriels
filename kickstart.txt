@@ -1,0 +1,238 @@
+installer sqlite3, avant de compiler python3
+sudo apt-get install libsqlite3-dev sqlite-doc uwsgi-plugin-python build-essential
+
+recuperer python3
+wget
+
+installer python3
+./configure
+make
+make test
+make install
+
+creer un virtualenv
+virtualenv -p python3.4 envs/wappa
+
+activer le virtualenv et installer
+django
+selenium
+pysqlite? not if aptitude installed libsqlite3-dev
+sphinx
+
+creer un projet django
+django-admin.py startproject
+
+et a l'interieur du projet django:
+- creer un repertoire pour les test fonctionnels
+- a l'interieur de ce dernier, creer un fichier all_users.py
+
+ce fichier contiendra tous les tests fonctionnels
+
+- creer un repertoire requirements
+- a l'interieur de ce dernier, creer les fichiers textes:
+base, dev, prod, test
+
+cela equivaut a 4 virtualenvs differents, en fonction du contexte.
+Cela signifie egalement que nous devrions avoir 4 virtualenvs, et non 1,
+tous les fichiers heriteront de base.txt
+
+django creera par defaut un seul fichier settings.py.
+A cote de ce fichier, nous allons creer un repertoire settings,
+et a l'interieur de ce repertoire, creer les fichiers:
+- base.py
+- prod.py
+- test.py
+- dev.py
+- __init__.py
+
+cela equivaut a une configuration, en fonction du contexte.
+Tous les fichier, heriteront de la configuration se trouvant dans base.py
+
+Pour executer django avec une configuration particuliere,
+on aura deux options
+
+la premiere, preciser la config en ligne de commande:
+$ python manage.py runserver --settings=wappa.settings.base
+
+la seconde, definir une variable d'env utilisée par notre virtualenv:
+- export DJANGO_SETTINGS_MODULE=wappa.settings.dev
+- unset DJANGO_SETTINGS_MODULE
+
+et plus besoin d'utiliser l'option --settings.
+Faudra egalement voir comment automastier la creation de la varenv
+
+dans les fichiers de configuration dev.py et test.py
+DEBUG = True
+TEMPLATE_DEBUG = True
+
+dans le fichier de config prod.py
+DEBUG = False
+TEMPLATE_DEBUG = False
+
+la cle secret ne doit pas apparaitre dans la configuration
+il faudra donc supprimer la variable SECRET_KEY du fichier de config
+base.py et la remplacer par une fonction lisant une varenv
+
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
+
+SECRET_KEY = get_env_variable('SECRET_KEY')
+
+Et donc:
+en demarrant le virtualenv, il faudra faire
+export SECRET_KEY=uneclésecrete
+
+en desactivant le virtualenv, il faudra avant faire
+unset SECRET_KEY
+
+autre maniere de definir une cle secret, est de l'ecrire dans un fichier,
+ce fichier ne doit pas etre versionné par git
+- creer un fichier secret.txt dans le repertoire settings
+- a l'interieur de ce fichier, coller la cle secret 'laclesecret'
+- a l'interieur de base.py recuperer la cle secret en faisant:
+
+def get_secret_from_file(secret_file):
+    try:
+        return open(os.path.join(BASE_DIR, secret_file)).read().strip()
+    except KeyError:
+        error_msg = "Secret file %s missing" % secret_file
+        raise ImproperlyConfigured(error_msg)
+
+SECRET_KEY = get_secret_from_file('settings/secret.txt')
+
+Definir l'url via laquelle les fichiers statics seront servis.
+modifier le fichier de configuration de base et ajouter:
+
+STATIC_URL = '/static/'
+
+Definir le repertoire dans lequel seront versés les fichiers
+statiques. a l'appel de l'url plus haut, quel est le repertoire
+où aller chercher les fichiers statiques? modifier le fichier
+de configuration de base et ajouter:
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+
+)
+
+Dans le repertoire "static", mettre les repertoire js, css, img.
+eventuellement, un favicon.ico
+
+il faudra ensuite appeler python manage.py collectstatic,
+lorsque l'on sera en production.
+
+
+Definir le repertoire dans lequel se trouvera tout le html. et un robot.txt.
+Django cherchera un repertoire templates au niveau du projet,
+puis au niveau de chaque application.
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, "templates"),
+
+)
+
+Les repertoires "templates" et "static" doivent exister,
+au meme niveau que le repertoire "settings"
+
+Transformer le repertoire functional_tests en module, en y
+mettant un fichier vide nommé __init__.py
+Ainsi, nous executerons les tests en tapant
+python manage.py test functional_tests
+
+tous les fichiers de tests a l'interieur du repertoire functiona_tests,
+doivent etre prefixés par "test_"
+
+
+Creation du modele de données:
+------------------------------
+Premiere chose, créer une application.
+Toutes les applications de notre projet seront placées ds le repertoire apps.
+ce repertoire se trouve au meme niveau que le fichier manage.py.
+
+creer une application a la racine du projet:
+python manage.py startapp photo
+
+deplacer cette application dans le repertoire apps:
+mv photo apps/; touch apps/__init__.py
+
+puis editer le fichier de configuration base.py,
+dans le tuple installed apps, ajouter une ligne: 'apps.photo', ainsi, django
+sait qu'il doit tenir compte de la nouvelle application.
+
+s'assurer que la racine du projet se trouve dans le python path,
+autrement, django ne sera pas capable de reconnaitre le repertoire apps
+comme etant un module
+
+# the directory containing the manage.py file
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
+
+# add ROOT_DIR to the python path
+import sys
+sys.path.append(ROOT_DIR)
+
+
+le processus sera a peu pres le suivant:
+
+editer le fichier models.py # pour mettre a jour le modele de données
+python manage.py makemigrations # pour creer le script de migration
+python manage.py migrate # pour appliquer les migration et ainsi modifier la bdd
+
+Ensuite, il nous faut créer un admin, pour le backoffice:
+python manage.py createsuperuser # a executer une et une seule fois bien sur :)
+
+
+GESTION DES UPLOADS D'IMAGES:
+-----------------------------
+Voici la config a ajouter ds le fichier base.py
+
+# Media files ( user uploaded contents)
+# https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-MEDIA_ROOT
+MEDIA_ROOT = "/var/www/wappa/media/"
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT est le chemin vers le repertoire qui sera utilisé pour recevoir
+les fichiers uploadés. Ce chemin doit exister et doit etre writable.
+
+MEDIA_URL est l'url qui sera utilisée pour acceder a MEDIA_ROOT via http.
+Doit toujours se terminer par un /
+
+Pour servir des fichiers uploadés par les clients en mode DEBUG=True,
+il suffit de modifier le fichier url.py et y ajouter:
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = patterns('',
+    # ... the rest of your URLconf goes here ...
+    ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+FIXTURES:
+---------
+- creer un repertoire fixtures dans chaque application
+- a l'interieur de ce repertoire, placer un fichier initial_data.json
+- a l'interieur de ce fichier, ecrire du json decrivant les données a inserer a chaque migrations
+Par defaut, django ira chercher dans chaque application, le fameux fichier initial_data.json
+et ensuite tentera d'inserer ces données ds les tables qu'il faut.
+
+Il est egalement possible de sauvegarder une bdd dans un fichier fixtures.
+- python manage.py dumpdata photo --format json --indent 2 --natural-foreign > path/to/initial_data.json
+Ce qui permet par exemple d'echanger la bdd entre devs de la meme equipe.
+Ces derniers devront faire:
+- python manage.py loaddata path/to/initial_data.json
+et les données seront inserées ds la bdd
+
+Enfin, il est egalement possible de definir un repetoire fixtures custom.
+Il suffit de modifier le fichier base.py en y ajoutant quelque chose comme:
+FIXTURE_DIRS = (
+    normpath(join(SITE_ROOT, 'fixtures')),
+
+)
+Et ainsi, plus besoin de preciser le chemin a chaque fois que l'on veut importer
