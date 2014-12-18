@@ -1,3 +1,16 @@
+DOCUMENTATION:
+--------------
+Cela pourrait etre utile: telecharger la doc de django,
+pour pouvoir la lire meme quand il n'y pas d'internet,
+ce qui est frequent dans notre cher continent de merde.
+
+- telecharger le zip de la version stable
+- installer python-setuptools via apt et simplejson, sphinx via pip
+- extraire le repertoire docs
+- entrer ds le repertoire docs et faire make html
+- la doc se trouve ds le repertoire _build/html
+
+
 installer sqlite3, avant de compiler python3
 sudo apt-get install libsqlite3-dev sqlite-doc uwsgi-plugin-python build-essential
 
