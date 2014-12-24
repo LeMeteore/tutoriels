@@ -249,3 +249,142 @@ FIXTURE_DIRS = (
 
 )
 Et ainsi, plus besoin de preciser le chemin a chaque fois que l'on veut importer
+
+
+INTERNATIONALIZATION / LOCALIZATION
+-----------------------------------
+i18n: art de preparer le projet a la localisation.
+l10n: ecrire les traductions
+
+s'assurer d'avoir installé gettext.
+http://ftp.gnu.org/pub/gnu/gettext/gettext-0.19.3.tar.xz
+
+modifier le fichire base.py et veiller a avoir la ligne:
+USE_I18N = True
+
+Pour configurer l'internationalization, il faut egalement
+configurer les template_context_processors. Ou pas,
+django en utilise deja certains par defaut, si rien n'est
+defini ds base.py
+
+("django.contrib.auth.context_processors.auth",
+"django.core.context_processors.debug",
+"django.core.context_processors.i18n",
+"django.core.context_processors.media",
+"django.core.context_processors.static",
+"django.core.context_processors.tz",
+"django.contrib.messages.context_processors.messages")
+
+Il n'y a donc rien a faire, si ce n'est verifier en
+lançant une console python et afficher la valeur par
+defaut:
+
+$ python manage.py shell
+>>> from django.conf import settings
+>>> settings.TEMPLATE_CONTEXT_PROCESSORS
+
+les templates context processors nous aideront
+a ecrire des tags que nous utiliserons ds les
+templates. exemple, ecrire un tag qui recupere
+une variable ds le fichier settings. nous y
+reviendrons.
+
+toujours pour configurer i18n/l10n,
+veiller a ce que le middleware Locale soit là.
+Il faut veiller a le placer apres sessionmidleware
+et avant commonmiddleware car l'ordre importe.
+Et si cachemiddleware est present, localemiddleware
+doit etre placé apres.
+
+MIDDLEWARE_CLASSES = (
+  ...
+  'django.middleware.locale.LocaleMiddleware'
+)
+
+Les middlewares permettent d'alterer le cycle
+requete/reponse de django grace a des hooks.
+
+specifier egalement les langages dans lesquels
+on va faire les traductions
+
+from django.utils.translation import ugettext_lazy as _
+# http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+LANGUAGES = (
+    ('en', _('English')),
+    ('de', _('German')),
+    ('fr', _('French')),
+)
+
+Ici, la fonction underscore alias de la fonction
+ugettext_lazy, est utilisée pour "marquer" le nom
+de la langue pour traduction. ugettext_lazy ne fera
+de traductions qu'au moment de rendre le template
+
+si aucune traduction trouvée,
+traduction par defaut: utiliser en
+LANGUAGE_CODE = 'en-us'
+
+# le chemin vers le repertoire contenant les trads
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+
+)
+
+Ensuite, il faut mettre a jour le fichier urls.py
+
+from django.conf.urls import patterns, include, url
+from django.contrib import admin
+from django.conf.urls.i18n import i18n_patterns
+from apps.photo.views import home, home_files
+
+urlpatterns = patterns('',
+    # Examples:
+    # url(r'^$', 'wappa.views.home', name='home'),
+    # url(r'^blog/', include('blog.urls')),
+    url(r'^(?P<filename>(robots.txt)|(humans.txt))$',
+                        home_files,name='home-files'),
+                        )
+
+urlpatterns += i18n_patterns(
+    '',
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', home, name='home'),
+)
+
+en gros, les urls admin/ et / vont etre gerée de
+maniere automagique. / deviendra /en/ par defaut,
+et admin/ deviendra /en/admin/ par defaut.
+Parce que mon navigateur prefere naviger en anglais.
+
+Sur un navigateur preferant naviguer en français,
+le prefixe fr/ sera ajouté a la place de en/
+
+Dans le cas où le navigateur ne donne pas sa preference,
+LANGUAGE_CODE determinera la langue a utiliser.
+
+les urls que nous voulons soumettre a la traduction
+doivent etre misent ds le tuple i18n_patterns
+
+les fichiers robots et humans ne seront pas soumis
+a cette gestion automagique d'urls.
+
+Pour generer les fichiers contenant les traductions.
+Se mettre a la racine du projet a cote de manage.py
+et taper:
+
+python manage.py makemessages -l en
+python manage.py makemessages -l fr
+python manage.py makemessages -l de
+
+J'utilise une version de django ayant un leger bug.
+le bug a deja ete fixé, je dois mettre a jour django.
+Pour que les trois commandes precedentes fonctionnent,
+en attendant de maj django, je dois avoir dans base.py
+
+STATIC_ROOT = '/var/www/wappa/static/'
+
+Les fichiers de traductions sont tous dans:
+
+wappa/locales/en/LC_MESSAGES/django.po
+wappa/locales/fr/LC_MESSAGES/django.po
+wappa/locales/de/LC_MESSAGES/django.po
