@@ -416,3 +416,16 @@ now_aware = now()
 
 Definition du fuseau horaire par defaut, dans notre cas, afrique/dakar
 TIME_ZONE = 'Africa/Dakar', cette valeur devra etre mise a jour
+
+ATTRIBUTS TRADUCTIBLES
+----------------------
+faire en sorte que certains attribut de mon modele puissent etre
+traduits en fonction de l'url visitée.
+
+installation: pip install django-hvad
+mise a jour de base.py, modification du tuple INSTALLED_APPS
+hvad soit etre parmi les appli installées.
+
+modification de models.py
+
+modification de admin.py
