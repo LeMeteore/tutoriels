@@ -388,3 +388,31 @@ Les fichiers de traductions sont tous dans:
 wappa/locales/en/LC_MESSAGES/django.po
 wappa/locales/fr/LC_MESSAGES/django.po
 wappa/locales/de/LC_MESSAGES/django.po
+
+Django recommande l'installation de pytz, pour permettre le
+calcul de temps: allows accurate and cross platform timezone calculations.
+donc: pip install pytz et ensuite mise a jour du fichier base.txt
+
+Le support pour les fuseau horaire a ete activé par USE_TZ = True
+et donc, toutes les dates de notre systeme sont capable de reconnaitre
+le fuseau horaire.
+
+import datetime
+from django.utils.timezone import utc
+
+now_naive = datetime.datetime.now()
+now_aware = datetime.datetime.utcnow().replace(tzinfo=utc)
+
+now_naive ne sait pas quel est le fuseau horaire
+now_aware sait quel est son fuseau horaire.
+les fonctions is_aware() et is_naive() permettent de tester une date
+afin de savoir si cette derniere sait quel est son fuseau horaire.
+
+etant donné que USE_TZ = True dans notre config,
+pour avoir la date, il vaut mieux toujours faire
+
+from django.utils.timezone import now
+now_aware = now()
+
+Definition du fuseau horaire par defaut, dans notre cas, afrique/dakar
+TIME_ZONE = 'Africa/Dakar', cette valeur devra etre mise a jour
