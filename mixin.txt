@@ -1,0 +1,80 @@
+import logging
+
+class StrMixin(object):
+    '''
+    Automatically generate __str__ and __repr__
+    '''
+    def __str__(self):
+        import types
+        name = self.__class__.__name__ + ': '
+        attrs = [ '{}={}'.format(k,v) for (k,v) in self.__dict__.items() ]
+        return name + ', '.join(attrs)
+
+    def __repr__(self):
+        return str(self)
+
+class WithLog(object):
+    "A mixin class"
+    @property
+    def log(self, msg):
+        logger = logging.getLogger(self.__class__.__name__)
+        logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        logger.addHandler(ch)
+        logger.info(msg)
+
+
+class C(StrMixin, object):
+    pass
+
+class D(StrMixin, WithLog, object):
+    pass
+
+class E(object):
+    def hello(self):
+        return "hello world"
+
+class F(E, object):
+    def bye(self):
+        return "goodbye"
+
+
+>>> from mixin import *
+>>>
+>>> c = C()
+>>> d = D()
+>>> e = E()
+>>> f = F()
+>>>
+>>>
+>>> dir(c)
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
+>>>
+>>> dir(d)
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'log']
+>>>
+>>> dir(e)
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'hello']
+>>>
+>>> dir(f)
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'bye', 'hello']
+>>>
+>>> c
+C:
+>>> d
+D:
+>>> e
+<mixin.E object at 0x7ff122f3c550>
+>>>
+>>> d.log.warn("hello")
+>>>
+>>> e.hello()
+'hello world'
+>>>
+>>> f.hello()
+'hello world'
+>>>
+>>> f.bye()
+'goodbye'
+>>>
