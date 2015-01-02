@@ -78,3 +78,51 @@ D:
 >>> f.bye()
 'goodbye'
 >>>
+
+
+Another interesting use of mixin within django:
+-----------------------------------------------
+
+class ContactDetails(models.Model):
+  phone_number = models.CharField(...)
+  address = models.CharField(...)
+  ...
+
+  content_type = models.ForeignKey(ContentType)
+  object_id = models.PositiveIntegerField()
+  content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+  class Meta:
+    unique_together = ('content_type', 'object_id',)
+
+class User(models.Model):
+  ...
+  contacts = generic.GenericRelation(ContactDetails, object_id_field="object_pk")
+
+>>> u = User.objects.get(pk=1)
+>>> contact_card = u.contacts.all()[0]
+>>> print contact_card.phone_number
+
+class ContactMixin(object):
+  @property
+  def contact_card(self):
+  ctype = ContentType \
+    .objects \
+    .get_for_model(self.__class__)
+    try:
+      contact = Contact \
+        .objects \
+        .get(
+          content_type__pk = ctype.id,
+          object_id=self.id)
+    except Contact.DoesNotExist:
+      return None
+    return contact
+
+  class User(models.Model, ContactMixin):
+    ...
+
+>>> u = User.objects.get(pk=1)
+>>> print u.contact_card.phone_number
+
+http://timmyomahony.com/blog/reversing-unique-generic-foreign-key-django/
