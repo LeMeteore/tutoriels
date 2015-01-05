@@ -470,3 +470,12 @@ templates/admin pour l'appli admin de django
 templates/photo pour notre application photo
 templates/admin/hvad pour l'appli hvad que l'on a installé plus haut <-- subtil
 
+DJANGO TAGGIT
+-------------
+http://django-taggit.readthedocs.org/en/latest/forms.html
+
+- pip install django-taggit
+- mise a jour de INSTALLED_APPS: ajouter 'taggit'
+- mise a jour du modele: from taggit.managers import TaggableManager
+- ajout du champ tag ds une classe: tags = TaggableManager()
+- veiller a mettre a jour le fichier admin.py si necessaire
