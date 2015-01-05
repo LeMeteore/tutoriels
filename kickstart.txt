@@ -427,5 +427,46 @@ mise a jour de base.py, modification du tuple INSTALLED_APPS
 hvad soit etre parmi les appli installées.
 
 modification de models.py
+Il faut effectuer un import:
+from hvad.models import TranslatableModel, TranslatedFields
+- les classes doivent heriter de TranslatableModel
+- les champs devant etre traduits doivent etre du type TranslatedFields.
 
 modification de admin.py
+Effectuer les imports suivant:
+from hvad.admin import TranslatableAdmin
+from django.utils.translation import ugettext_lazy as _
+
+Les classes devant etre modifiées ds l'admin doivent heriter de TranslatableAdmin.
+Et les fieldsets doivent etre modifiés a peu pres comme suit:
+
+On va mettre d'un cote les fields devant etre traduits,
+et d'un autre ceux ne devant pas etre traduits.
+Puis on va dire a l'admin d'utiliser cette organisation des fields.
+
+class PackModelAdmin(TranslatableAdmin):
+    use_fieldsets = (
+        (_("Common"), {
+            'fields': ('domain', 'country', 'image',
+                       'date published', 'pack_type', 'status',)
+            }),
+        (_("Language dependent"), {
+            'fields': ('label', 'description',),
+
+            }),
+        )
+
+    def get_fieldsets(self, request, obj=None):
+        return self.use_fieldsets
+
+admin.site.register(Pack, PackModelAdmin)
+
+hvad vient avec une serie de templates qu'il faudra deplacer
+dans notre repertoire de templates afin de les customizer:
+
+notre repertoire templates contient un repertoire par application.
+chaque repertoire porte exactement le nom de l'application pour laquelle les templates y sont definis.
+templates/admin pour l'appli admin de django
+templates/photo pour notre application photo
+templates/admin/hvad pour l'appli hvad que l'on a installé plus haut <-- subtil
+
