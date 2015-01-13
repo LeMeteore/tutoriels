@@ -479,3 +479,119 @@ http://django-taggit.readthedocs.org/en/latest/forms.html
 - mise a jour du modele: from taggit.managers import TaggableManager
 - ajout du champ tag ds une classe: tags = TaggableManager()
 - veiller a mettre a jour le fichier admin.py si necessaire
+
+effectuer des recherches avec filtres:
+http://django-taggit.readthedocs.org/en/latest/api.html
+
+
+Pour faire en sorte que les tags soient disponibles au niveau des templatestags:
+https://github.com/feuervogel/django-taggit-templatetags
+
+
+DJANGO STORAGES
+---------------
+Stocker les images updloadées sur un bucket amazon s3
+- recuperer django-storages: https://bitbucket.org/david/django-storages/downloads
+- installer django-storages: python setup.py install
+- installer le module io: pip install io
+
+The StringIO and cStringIO modules are gone. Instead, import the io module and use io.StringIO or io.BytesIO for text and data respectively.
+
+CUSTOM USER MODEL
+-----------------
+ou comment definir la classe a utiliser pour definir un utilisateur.
+https://docs.djangoproject.com/en/1.7/topics/auth/customizing/#extending-the-existing-user-model
+
+
+DJANGO CELERY:
+--------------
+- pip install celery
+- ajout d'un fichier celery.py juste a cote du fichier urls.py principal
+- contenu du fichier celery.py:
+
+from __future__ import absolute_import
+import os
+from celery import Celery
+from django.conf import settings
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings')
+app = Celery('proj')
+
+# Using a string here means the worker will not have to
+# pickle the object when using Windows.
+app.config_from_object('django.conf:settings')
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+@app.task(bind=True)
+def debug_task(self):
+    print('Request: {0!r}'.format(self.request))
+
+
+Ensuite, modifier le fichier __init__.py se trouvant au meme niveau:
+
+from __future__ import absolute_import
+
+# This will make sure the app is always imported when
+# Django starts so that shared_task will use this app.
+from .celery import app as celery_app
+
+Veiller egalement a modifier le fichier base.py, pour y inclure
+la configuration relative a celery:
+
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+Ne pas oublier d'installer redis
+- aptitude install redis-server
+- pip install redis
+
+La commande pour lancer le gestionnaire de taches:
+$ celery -A wappa worker -l info
+
+Derneire chose, ecrire les taches de notre application
+a l'interieur d'un fichier tasks.py se trouvant au meme niveau
+que models.py:
+
+from celery.task import Task
+from celery.registry import tasks
+
+import sys
+import boto
+import boto.s3
+from boto.s3.key import Key
+
+class UploadToAS3(Task):
+    def percent_cb(complete, total):
+        pass
+
+    def run(self, uploadfile, **kwargs):
+        k = Key(bucket)
+        # the key, should be the file name
+        k.key = str(uploadfile)
+        # the key value
+        k.set_contents_from_filename(uploadfile,
+                                     cb=percent_cb,
+                                      num_cb=10)
+
+class ReduceImageSize(Task):
+    def run(self, uploadfile, **kwargs):
+        pass
+
+
+class RemoveOriginalImage(Task):
+    def run(self, **kwargs):
+        pass
+
+tasks.register(MyTask)
+
+
+
+Django pages statiques:
+-----------------------
+simple, modifier le fichier url.py et ajouter les routes vers les fichiers statiques:
+url(r'^about',
+    TemplateView.as_view(template_name='path/to/about_us.html'),
+    name='about'),
+
+ou bien utiliser les flatpages:
+https://docs.djangoproject.com/en/1.7/ref/contrib/flatpages/
