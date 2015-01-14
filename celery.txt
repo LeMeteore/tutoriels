@@ -1,0 +1,53 @@
+CELERY:
+-------
+gestionnaire de taches with batteries included.
+- pip install celery
+
+BROKER:
+-------
+celery a besoin d'un outil pour recevoir et envoyer des messages.
+on parle de message broker: rabbitmq, redis, mongodb, django orm, ...
+
+BACKEND:
+--------
+celery a besoin de de stocker quelque part, les "etats" des
+differentes taches qu'il est entrain d'executer. ceci n'est
+utile que lorsque l'on desire conserver un historique des "etats"
+des taches. les backends peuvent etre: rabbitmq, redis, mongodb, djago orm, ...
+
+les "etats" seront postés tes des messages.
+
+APPLICATION:
+------------
+module pouvant etre importé par d'autres modules python.
+c'est le point d'entrée pour creer des taches, gerer les workers,
+pour toutes choses devant etre faites ds celery.
+
+on parle aussi d'instance celery, ou celery application.
+example fichier tasks.py contenant une liste de taches:
+
+from celery import Celery
+
+# 'tasks' c'est le nom du module, broker c'est le broker
+app = Celery('tasks', broker='amqp://guest@localhost//', backend='redis://localhost/0')
+
+@app.task
+def add(x, y):
+    return x + y
+
+une simple tache qui fait une addition.
+veiller a lancer le worker dans une console:
+$ celery -A tasks worker --loglevel=info # lancer le worker
+$ celery help # aide
+
+example fichier main.py contenant l'appli principale,
+celle qui aura besoin d'executer des taches en arriere plan:
+
+
+
+Le principe sera a peu pres le suivant:
+- avoir un module contenant toutes les taches a executer.
+- faire en sorte que ce module soit importable par d'autre modules.
+- lancer le worker en daemon, en arriere plan et gerer le daemon via supervisord
+- a l'interieur de l'application principale, importer une tache du module
+- lancer la tache
