@@ -470,6 +470,7 @@ templates/admin pour l'appli admin de django
 templates/photo pour notre application photo
 templates/admin/hvad pour l'appli hvad que l'on a installé plus haut <-- subtil
 
+
 DJANGO TAGGIT
 -------------
 http://django-taggit.readthedocs.org/en/latest/forms.html
@@ -488,14 +489,10 @@ Pour faire en sorte que les tags soient disponibles au niveau des templatestags:
 https://github.com/feuervogel/django-taggit-templatetags
 
 
-DJANGO STORAGES
----------------
-Stocker les images updloadées sur un bucket amazon s3
-- recuperer django-storages: https://bitbucket.org/david/django-storages/downloads
-- installer django-storages: python setup.py install
-- installer le module io: pip install io
+DJANGO ENVOYER DES FICHIERS DANS UN BUCKET AS3
+----------------------------------------------
+- pip install boto
 
-The StringIO and cStringIO modules are gone. Instead, import the io module and use io.StringIO or io.BytesIO for text and data respectively.
 
 CUSTOM USER MODEL
 -----------------
@@ -548,7 +545,7 @@ Ne pas oublier d'installer redis
 La commande pour lancer le gestionnaire de taches:
 $ celery -A wappa worker -l info
 
-Derneire chose, ecrire les taches de notre application
+Derniere chose, ecrire les taches de notre application
 a l'interieur d'un fichier tasks.py se trouvant au meme niveau
 que models.py:
 
@@ -560,18 +557,35 @@ import boto
 import boto.s3
 from boto.s3.key import Key
 
+
 class UploadToAS3(Task):
+
+    # AWS ACCESS DETAILS
+    AWS_ACCESS_KEY_ID = ''
+    AWS_SECRET_ACCESS_KEY = ''
+
+    # a bucket per author maybe
+    bucket_name = 'web-application-photo-bucket'
+    conn = boto.connect_s3(AWS_ACCESS_KEY_ID,
+                        AWS_SECRET_ACCESS_KEY)
+    #bucket = conn.create_bucket(bucket_name,
+    #                            location=boto.s3.connection.Location.DEFAULT)
+
+    # retrieve the bucket owned by me
+    bucket = conn.get_bucket(bucket_name)
+
     def percent_cb(complete, total):
-        pass
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        #pass
 
     def run(self, uploadfile, **kwargs):
-        k = Key(bucket)
+        f = os.path.join(settings.MEDIA_ROOT, uploadfile)
+        k = Key(self.bucket)
         # the key, should be the file name
         k.key = str(uploadfile)
         # the key value
-        k.set_contents_from_filename(uploadfile,
-                                     cb=percent_cb,
-                                      num_cb=10)
+        k.set_contents_from_filename(str(f))
 
 class ReduceImageSize(Task):
     def run(self, uploadfile, **kwargs):
@@ -584,6 +598,17 @@ class RemoveOriginalImage(Task):
 
 tasks.register(MyTask)
 
+Juste au dessus, c'est le contenu du fichier tasks.py,
+ne pas oublier de lancer le service celery: celery -A wappa worker -l info
+La meilleure chose etant de lancer le service via supervisord.
+
+Ensuite, il faut pouvoir appeler notre tache celery quand on veut.
+Generalement, cela se fera a l'interieur d'une view, apres avoir validé un formulaire,
+ou vien apres avoir verifié certaines conditions.
+
+Nous ce qu'on desire c'est envoyer une image sur AS3, juste apres l'upload.
+On va donc modifier notre admin.py et redefinir la fonction save ainsi.
+
 
 
 Django pages statiques:
@@ -595,3 +620,52 @@ url(r'^about',
 
 ou bien utiliser les flatpages:
 https://docs.djangoproject.com/en/1.7/ref/contrib/flatpages/
+
+
+EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
+--------------------------------------------------------------
+>>> from apps.photo.models import Photo
+>>> p = Photo.objects.language('en').first()
+>>> p.label
+'a picture'
+>>> p.image
+<ImageFieldFile: wappa/ace.png>
+>>> dir(p.image)
+['DEFAULT_CHUNK_SIZE', '__bool__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__nonzero__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_committed', '_del_file', '_file', '_get_closed', '_get_file', '_get_height', '_get_image_dimensions', '_get_path', '_get_size', '_get_url', '_get_width', '_require_file', '_set_file', '_set_size', 'chunks', 'close', 'closed', 'delete', 'encoding', 'field', 'file', 'fileno', 'flush', 'height', 'instance', 'isatty', 'multiple_chunks', 'name', 'newlines', 'open', 'path', 'read', 'readinto', 'readline', 'readlines', 'save', 'seek', 'size', 'softspace', 'storage', 'tell', 'truncate', 'url', 'width', 'write', 'writelines', 'xreadlines']
+>>> p.image.name
+'wappa/ace.png'
+>>> import os
+>>> os.path.abspath(p.image.name)
+'/home/nsukami/envs/wappa/source/wappa/wappa/ace.png'
+>>>
+
+AUTRE EXEMPLE:
+--------------
+>>> from apps.photo.tasks import UploadToAS3
+>>> from apps.photo.models import Photo
+>>> p = Photo.objects.language('fr').first()
+>>> i = p.image.name
+>>> i
+'wappa/AwGq7_rpyoyil.png'
+>>> UploadToAS3.delay(i)
+<AsyncResult: db7552b3-aebc-4140-9dc2-5004279528b9>
+>>> import os
+>>> r = UploadToAS3.delay(os.path.abspath(i))
+>>> r
+<AsyncResult: c8b1492a-e95e-4da3-a012-c924cbff3236>
+>>>
+
+RECUPERATION DU CHEMIN REEL VERS UNE IMAGE
+------------------------------------------
+>>> from apps.photo.models import Photo
+>>> from django.conf import settings
+>>> p = Photo.objects.language('fr').first()
+>>> i = p.image.name
+>>> i
+'wappa/AwGq7_rpyoyil.png'
+>>> settings.MEDIA_ROOT
+'/var/www/wappa/media/'
+>>> import os
+>>> os.path.join(settings.MEDIA_ROOT, i)
+'/var/www/wappa/media/wappa/AwGq7_rpyoyil.png'
+>>>
