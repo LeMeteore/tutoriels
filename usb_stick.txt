@@ -16,6 +16,7 @@
 # lancer l'utilitaire de partitionnement
 # fdisk /dev/sdb
 # l'assistant est assez precis et sympa
+# d n t w
 # creer une partion principale, une etendue, une logique
 # veiller a choisir fat32 comme systeme de fichiers
 # ecrire la nouvelle table de partition
