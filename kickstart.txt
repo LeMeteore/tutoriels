@@ -32,7 +32,9 @@ selenium
 pysqlite? not if aptitude installed libsqlite3-dev
 sphinx
 
-creer un projet django
+
+CREER UN PROJET DJANGO
+----------------------
 django-admin.py startproject
 
 et a l'interieur du projet django:
@@ -162,7 +164,7 @@ tous les fichiers de tests a l'interieur du repertoire functiona_tests,
 doivent etre prefixés par "test_"
 
 
-Creation du modele de données:
+CREATION DU MODELE DE DONNÉES:
 ------------------------------
 Premiere chose, créer une application.
 Toutes les applications de notre projet seront placées ds le repertoire apps.
@@ -609,6 +611,37 @@ ou vien apres avoir verifié certaines conditions.
 Nous ce qu'on desire c'est envoyer une image sur AS3, juste apres l'upload.
 On va donc modifier notre admin.py et redefinir la fonction save ainsi.
 
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+from django.contrib import admin
+from apps.photo.models import Photo, Pack
+from apps.photo.tasks import UploadToAS3
+from hvad.admin import TranslatableAdmin
+from django.utils.translation import ugettext_lazy as _
+
+class PhotoModelAdmin(TranslatableAdmin):
+    use_fieldsets = (
+        (_("Common"), {
+            'fields': ('pack', 'country', 'image',
+                       'date published', 'status',)
+            }),
+        (_("Language dependent"), {
+            'fields': ('label', 'description', 'tags',),
+            }),
+        )
+
+    def get_fieldsets(self, request, obj=None):
+        return self.use_fieldsets
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        UploadToAS3.delay(obj.image.name)
+
+
+L'importante modification est la definition de la methode save_model,
+a l'interieur, on sauvegarde notre objet et juste apres, on appelle notre tache.
+La tache attend en argument, le chemin vers une image et sera non bloquante.
 
 
 Django pages statiques:
@@ -620,6 +653,13 @@ url(r'^about',
 
 ou bien utiliser les flatpages:
 https://docs.djangoproject.com/en/1.7/ref/contrib/flatpages/
+
+
+DOCUMENTATION DU PROJET AVEC SPHINX
+-----------------------------------
+- pip install sphinx
+- sphinx-quickstart
+
 
 
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
@@ -668,4 +708,33 @@ RECUPERATION DU CHEMIN REEL VERS UNE IMAGE
 >>> import os
 >>> os.path.join(settings.MEDIA_ROOT, i)
 '/var/www/wappa/media/wappa/AwGq7_rpyoyil.png'
+>>>
+
+
+MANIPULATION D'IMAGE AVEC PIL
+--------------------------------
+>>> import os
+>>> from django.conf import settings
+>>> from PIL import Image
+>>> from apps.photo.models import Photo
+>>> p = Photo.objects.language('fr').first()
+>>> ii = p.image.name
+>>> ii
+'wappa/AwGq7_rpyoyil.png'
+>>> i = os.path.join(settings.MEDIA_ROOT, ii)
+>>> i
+'/var/www/wappa/media/wappa/AwGq7_rpyoyil.png'
+>>> ii = Image.open(i)
+>>> dir(ii)
+['_Image__transformer', '_PngImageFile__idat', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_copy', '_dump', '_expand', '_makeself', '_new', '_open', 'category', 'close', 'convert', 'copy', 'crop', 'decoderconfig', 'decodermaxblock', 'draft', 'effect_spread', 'filename', 'filter', 'format', 'format_description', 'fp', 'frombytes', 'fromstring', 'getbands', 'getbbox', 'getcolors', 'getdata', 'getextrema', 'getim', 'getpalette', 'getpixel', 'getprojection', 'histogram', 'im', 'info', 'load', 'load_end', 'load_prepare', 'load_read', 'mode', 'offset', 'palette', 'paste', 'png', 'point', 'putalpha', 'putdata', 'putpalette', 'putpixel', 'pyaccess', 'quantize', 'readonly', 'resize', 'rotate', 'save', 'seek', 'show', 'size', 'split', 'tell', 'text', 'thumbnail', 'tile', 'tobitmap', 'tobytes', 'tostring', 'transform', 'transpose', 'verify']
+>>>
+>>> ii.resize((128, 128))
+<PIL.Image.Image image mode=RGB size=128x128 at 0x7F9974D076D8>
+>>> iout = ii.resize((128,128))
+>>> outfile = os.path.splitext(i)[0]+"_thumbnail.png"
+>>> iout.save(outfile, "PNG")
+>>>
+>>> # on peut egalement utiliser la fonction thumbnail
+>>> ii.thumbnail((12, 12))
+>>> ii.save(outfile, "PNG")
 >>>
