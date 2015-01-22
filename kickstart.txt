@@ -738,3 +738,35 @@ MANIPULATION D'IMAGE AVEC PIL
 >>> ii.thumbnail((12, 12))
 >>> ii.save(outfile, "PNG")
 >>>
+
+RETROUVER ADMIN URL POUR UN MODEL:
+----------------------------------
+>>> from django.contrib import admin
+>>> dir(admin.site.urls)
+['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'count', 'index']
+>>> type(admin.site.urls)
+<class 'tuple'>
+>>> admin.site.urls
+([<RegexURLPattern index ^$>, <RegexURLPattern login ^login/$>, <RegexURLPattern logout ^logout/$>, <RegexURLPattern password_change ^password_change/$>, <RegexURLPattern password_change_done ^password_change/done/$>, <RegexURLPattern jsi18n ^jsi18n/$>, <RegexURLPattern view_on_site ^r/(?P<content_type_id>\d+)/(?P<object_id>.+)/$>, <RegexURLResolver <RegexURLPattern list> (None:None) ^auth/group/>, <RegexURLResolver <RegexURLPattern list> (None:None) ^auth/user/>, <RegexURLResolver <RegexURLPattern list> (None:None) ^photo/photo/>, <RegexURLResolver <RegexURLPattern list> (None:None) ^taggit/tag/>, <RegexURLResolver <RegexURLPattern list> (None:None) ^photo/pack/>, <RegexURLPattern app_list ^(?P<app_label>auth|photo|taggit)/$>], 'admin', 'admin')
+>>>
+>>>
+>>> from django.core import urlresolvers
+>>> from django.contrib.contentypes.models import ContentType
+>>> from django.contrib.contenttypes.models import ContentType
+>>> from apps.photo.models import Photo, Pack
+>>> ct = ContentType.objects.get_for_model(Pack)
+>>> ct.model
+'pack'
+>>> ct.app_label
+'photo'
+>>> urlresolvers.reverse("admin:photo_pack_change")
+>>> help(urlresolvers.reverse)
+>>> p = Pack.objects.first()
+>>> p = Pack.objects.first()
+>>> p.pk
+1
+>>> urlresolvers.reverse("admin:photo_pack_change", args=(p.pk,))
+'/en-us/admin/photo/pack/1/'
+>>> urlresolvers.reverse("admin:photo_pack_change", args=(1,))
+'/en-us/admin/photo/pack/1/'
+>>>
