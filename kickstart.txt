@@ -378,6 +378,10 @@ python manage.py makemessages -l en
 python manage.py makemessages -l fr
 python manage.py makemessages -l de
 
+Il faut lancer ces commandes chaque fois que l'on ajoute
+un nouveau mot n'etant pas encore traduit.
+Ensuite, aller editer ces fichier pour definir les bonnes traductions
+
 J'utilise une version de django ayant un leger bug.
 le bug a deja ete fixé, je dois mettre a jour django.
 Pour que les trois commandes precedentes fonctionnent,
@@ -642,6 +646,30 @@ class PhotoModelAdmin(TranslatableAdmin):
 L'importante modification est la definition de la methode save_model,
 a l'interieur, on sauvegarde notre objet et juste apres, on appelle notre tache.
 La tache attend en argument, le chemin vers une image et sera non bloquante.
+
+
+Object Country:
+---------------
+A un pack, on peut attacher un ou plusieurs pays.
+Le pays doit etre defini avec un code et un nom.
+Le nom de ce pays doit etre traductible.
+
+from django.utils.translation import ugettext_lazy as _
+
+class Country(TranslatableModel):
+    code = models.CharField(max_length=2, primary_key=True)
+    translations = TranslatedFields(
+        name = models.CharField(max_length=200)
+        )
+
+    def __str__(self):
+        return "%s" % self.lazy_translation_getter('name', str(self.pk))
+
+    class Meta:
+        verbose_name = _("country")
+        verbose_name_plural = _("countries")
+
+
 
 
 Django pages statiques:
