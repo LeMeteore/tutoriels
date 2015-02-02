@@ -689,6 +689,24 @@ DOCUMENTATION DU PROJET AVEC SPHINX
 - sphinx-quickstart
 
 
+CUSTOMISER LA HOME PAGE DE DJANGO ADMIN
+---------------------------------------
+editer les fichiers:
+- admin/app_index.html
+- admin/index.html
+
+CUSTOMISER LES TEMPLATES UTILISÉS PAR LES MODELES:
+--------------------------------------------------
+En bref, il suffit d'ecrire soit meme ses templates, et de passer au ModelAdmin,
+le chemin vers les templates customs.
+Pour chacune des classes a l'interieur du fichier admin.py, redefinir les attributs:
+add_form_template = "admin/photo/add_status_form.html"
+change_form_template = "admin/photo/change_status_form.html"
+change_list_template = "admin/photo/change_status_list.html"
+delete_confirmation_template = None
+delete_selected_confirmation_template = None
+object_history_template = None
+
 
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
