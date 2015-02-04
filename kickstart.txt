@@ -647,27 +647,80 @@ L'importante modification est la definition de la methode save_model,
 a l'interieur, on sauvegarde notre objet et juste apres, on appelle notre tache.
 La tache attend en argument, le chemin vers une image et sera non bloquante.
 
+Creation d'une application Taxonomy, pour gerer tout ce qui est categorisation
+------------------------------------------------------------------------------
 
-Object Country:
----------------
-A un pack, on peut attacher un ou plusieurs pays.
-Le pays doit etre defini avec un code et un nom.
-Le nom de ce pays doit etre traductible.
+A l'interieur de cette application, 4 modeles:
+- country: le pays auquel est lié le pack
+- status: le status, offline, online
+- domain: le domaine auquel appartient un pack
+- gender: le type d'un pack
 
-from django.utils.translation import ugettext_lazy as _
 
-class Country(TranslatableModel):
-    code = models.CharField(max_length=2, primary_key=True)
-    translations = TranslatedFields(
-        name = models.CharField(max_length=200)
-        )
+Modification des models pack et photo, etre capable pour chaque objet de type pack ou photo,
+de retrouver l'url admin de modification.
 
-    def __str__(self):
-        return "%s" % self.lazy_translation_getter('name', str(self.pk))
+def get_change_urls(self):
+    content_type = ContentType.objects.get_for_model(self.__class__)
+    return urlresolvers.reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
 
-    class Meta:
-        verbose_name = _("country")
-        verbose_name_plural = _("countries")
+
+TEMPLATING:
+-----------
+
+debugger les templates
+----------------------
+- pip install django-template-debug.
+- mettre dans le settings TEMPLATE_DEBUG=True
+- mettre dans le template a debugger: {% load debug_tags %}
+- ensuite:
+
+{% set_trace %}: je comprend pas comment ça marche.
+
+{% attributes <variable_name> %}: liste des attributs d'une variable.
+
+{% variables %}: liste des variables dans le template.
+
+{% details <variable_name> %}: dictionnaire contenant les attributs:valeurs pour une variable donnée.
+
+
+Le bloc suivant dans change_form.html est en charge de l'affichage des onglets fr et en.
+----------------------------------------------------------------------------------------
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+    </li>
+    {% if has_absolute_url %}<li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+
+
+
+le bloc suivant dans change_list.html est en charge d'afficher le bouton ajouter
+----------------------------------------------------------------------------------
+
+{% block object-tools %}
+  {% if has_add_permission %}
+    <ul class="object-tools">
+      {% block object-tools-items %}
+        <li>
+          {% url cl.opts|admin_urlname:'add' as add_url %}
+          <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+            {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+          </a>
+        </li>
+      {% endblock %}
+    </ul>
+  {% endif %}
+{% endblock %}
+
 
 
 
