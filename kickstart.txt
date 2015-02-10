@@ -23,6 +23,11 @@ make
 make test
 make install
 
+installer des dependance pour PIL:
+apt-get install libjpeg-dev
+apt-get install zlib1g-dev
+apt-get install libpng12-dev
+
 creer un virtualenv
 virtualenv -p python3.4 envs/wappa
 
@@ -761,6 +766,58 @@ delete_selected_confirmation_template = None
 object_history_template = None
 
 
+POUR SERVIR UNE IMAGE UPLOADÉE PAR UN USER, UNIQUEMENT EN MODE DEBUG:
+---------------------------------------------------------------------
+
+- modifier le fichier urls.py
+from django.conf import settings
+from django.conf.urls.static import static
+
+- et a la suite des urls existantes, ajouter:
+if settings.DEBUG == True:
+    urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+- a l'interieur du template:
+<li><img src="{{ MEDIA_URL }}{{ a.image }}" alt="My image"/></li>
+<li><img src="{{ a.image.url }}" alt="{{ a.description }}"/></li>
+
+
+CREATION DE THUMBNAILS A LA VOLEE:
+----------------------------------
+- pip install django-imagekit
+- ajouter imagekit au tuple installed_app dans settings/base.py
+- dans le template:
+<li>{% thumbnail '100x50' a.image %}</li>
+
+ou bien:
+{% with source_file = a.image %}
+<li>{% thumbnail '100x50' source_file %}</li>
+{% endwith %}
+
+
+AJOUTER UNE NOUVELLE URL A L'ADMIN INTERFACE:
+---------------------------------------------
+- redefinir la methode get_url de notre ModelAdmin et lui passer l'url custom:
+
+    def get_urls(self):
+        urls = super(PackModelAdmin, self).get_urls()
+        custom_urls = patterns('',
+                               url(r'(?P<pack_id>\d+)/remove_photo/(?P<photo_id>\d+)/$',
+                                self.admin_site.admin_view(self.remove_photo_from_pack),
+                                name='rpfp'),
+                                )
+        return custom_urls + urls
+
+- ensuite, definir la vue appelée lorsque l'url custom sera invoquée:
+
+    def remove_photo_from_pack(self, request, photo_id, pack_id):
+        messages.add_message(request, messages.SUCCESS, _('photo removed from pack with success.'))
+        photo = Photo.objects.get(pk=photo_id)
+        Pack.objects.get(pk=pack_id).photos.remove(photo)
+        return HttpResponseRedirect(urlresolvers.reverse("admin:photo_pack_change",args=(pack_id,)))
+
+
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
@@ -777,6 +834,20 @@ EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 >>> os.path.abspath(p.image.name)
 '/home/nsukami/envs/wappa/source/wappa/wappa/ace.png'
 >>>
+
+
+AUTRE EXEMPLE:
+--------------
+>>> p = Photo.objects.first()
+>>> p.image
+<ImageFieldFile: wappa/4f837950362ec_NcmvTiQ.jpg>
+>>> p.url
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  AttributeError: 'Photo' object has no attribute 'url'
+>>> p.image.url
+'/media/wappa/4f837950362ec_NcmvTiQ.jpg'
+
 
 AUTRE EXEMPLE:
 --------------
