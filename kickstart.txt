@@ -11,7 +11,7 @@ ce qui est frequent dans notre cher continent de merde.
 - la doc se trouve ds le repertoire _build/html
 
 
-installer sqlite3, avant de compiler python3
+installer sqlite3, avant de compiler python3:
 sudo apt-get install libsqlite3-dev sqlite-doc uwsgi-plugin-python build-essential
 
 recuperer python3
