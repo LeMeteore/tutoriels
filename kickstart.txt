@@ -11,7 +11,7 @@ ce qui est frequent dans notre cher continent de merde.
 - la doc se trouve ds le repertoire _build/html
 
 
-installer sqlite3, avant de compiler python3:
+- installer sqlite3, avant de compiler python3:
 sudo apt-get install libsqlite3-dev sqlite-doc uwsgi-plugin-python build-essential
 
 recuperer python3
@@ -815,6 +815,16 @@ AJOUTER UNE NOUVELLE URL A L'ADMIN INTERFACE:
         photo = Photo.objects.get(pk=photo_id)
         Pack.objects.get(pk=pack_id).photos.remove(photo)
         return HttpResponseRedirect(urlresolvers.reverse("admin:photo_pack_change",args=(pack_id,)))
+
+- et ensuite, invoquer la vue depuis un template:
+<a href="{% url 'admin:photo_photo_change' a.id %}">{% blocktrans %}update {% endblocktrans %}</a>
+<a href="{% url 'admin:rpfp' photo_id=a.id pack_id=current_pack.id %}">{% blocktrans %}rpfp {% endblocktrans %}</a>
+
+
+DANS LE TEMPLATE COMMENT ACCEDER A L'OBJET FORM VENANT DE L'ADMIN INTERFACE:
+----------------------------------------------------------------------------
+- si on considere que l'entité du modele possede un attribut 'title':
+{{ adminform.form.title.label_tag }}: {{ adminform.form.title }}
 
 
 
