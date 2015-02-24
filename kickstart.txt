@@ -859,6 +859,34 @@ def save(self, *args, **kwargs):
     super(Photo, self).save(*args, **kwargs)
 
 
+MODIFIER LA MANIERE DONT LE FIELD SERA RENDU DANS LE HTML
+---------------------------------------------------------
+Dans le modele, on a cet attribut:
+image = models.ForeignKey(Photo, null=True, blank=True, verbose_name=_('image preview'))
+
+Dans la vue, cet attribut est rendu en utilisant une dropdownlist.
+Pour modifier ce comportement, il faut:
+- redefinir l'objet "formulaire" utilisé par l'admin.
+- dans ce formulaire, redefinir l'objet "widget" utilisé pour rendre l'attribut image.
+
+Ici, on demande a notre attribut d'etre rendu en utilisant un simple input de type texte.
+
+class PackAdminForm(TranslatableModelForm):
+    class Meta:
+        model = Pack
+        widgets = {
+             'image': forms.TextInput(),
+             }
+
+- Une fois le formulaire redefini, il faut l'appeler dans la class admin:
+
+class PackModelAdmin(TranslatableAdmin):
+    form = PackAdminForm
+
+PS: on ne redefinit qu'un seul attribut, les autres utiliseront les widgets par defaut.
+
+
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
