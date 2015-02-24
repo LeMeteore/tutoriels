@@ -828,6 +828,37 @@ DANS LE TEMPLATE COMMENT ACCEDER A L'OBJET FORM VENANT DE L'ADMIN INTERFACE:
 
 
 
+MODIFIER LE NOM DE L'IMAGE FRAICHEMENT UPLODEE:
+-----------------------------------------------
+- modifier l'attribut image de la classe Photo:
+image = models.ImageField(max_length=200, upload_to=content_file_name)
+
+- definir la fonction content_file_name
+    # function called after the save function is called to rename image filename
+    def content_file_name(instance, filename):
+        fname, fext = os.path.splitext(filename)
+        filename = "%s_%s_%s%s%s%s" % (instance.author_id,
+                                        instance.id,
+                                        instance.width, "x", instance.height,
+                                        fext)
+        full_filename = os.path.join('wappa', filename)
+        # remove file if exists
+        if os.path.isfile(os.path.join(settings.MEDIA_ROOT, full_filename)):
+            os.remove(os.path.join(settings.MEDIA_ROOT, full_filename))
+        return full_filename
+
+- modifier la fonction save de la classe pour qu'elle soit appelée deux fois:
+def save(self, *args, **kwargs):
+    # save image, to set the id object
+    if self.id is None:
+        tmp_img, self.image = self.image, None
+        super(Photo, self).save(*args, **kwargs)
+        self.image = tmp_img
+
+    # self.image has changed, so save is called again
+    super(Photo, self).save(*args, **kwargs)
+
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
@@ -950,3 +981,10 @@ RETROUVER ADMIN URL POUR UN MODEL:
 >>> urlresolvers.reverse("admin:photo_pack_change", args=(1,))
 '/en-us/admin/photo/pack/1/'
 >>>
+
+
+RECUPERER L'OBJET FORM DE L'ADMIN
+---------------------------------
++    def get_form(self, request, obj=None, **kwargs):
++        form = super(PhotoModelAdmin, self).get_form(request, **kwargs)
++        return form
