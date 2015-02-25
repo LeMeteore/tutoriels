@@ -871,6 +871,7 @@ Pour modifier ce comportement, il faut:
 
 Ici, on demande a notre attribut d'etre rendu en utilisant un simple input de type texte.
 
+# PackAdminForm se trouve dans admin.py, mais peut bien etre ailleurs
 class PackAdminForm(TranslatableModelForm):
     class Meta:
         model = Pack
@@ -880,11 +881,29 @@ class PackAdminForm(TranslatableModelForm):
 
 - Une fois le formulaire redefini, il faut l'appeler dans la class admin:
 
+# PackModelAdmin se trouve dans admin.py
 class PackModelAdmin(TranslatableAdmin):
     form = PackAdminForm
 
 PS: on ne redefinit qu'un seul attribut, les autres utiliseront les widgets par defaut.
 
+
+FAIRE EN SORTE QUE LE CHAMP D'UN FORM NE SOIT PAS REQUIS:
+---------------------------------------------------------
+- redefinir la fonction __init__ de la classe de type Form
+- la ligne importante etant: self.fields['wtfname'].required = False
+
+class PackAdminForm(TranslatableModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TranslatableModelForm, self).__init__(*args, **kwargs)
+        self.fields["wtfname"].required = False
+
+    wtfname = forms.CharField(help_text="Please enter the category name.",
+                              min_length=None,
+                              max_length=None)
+
+Ainsi, lorsque le formulaire sera rendu dans le html,
+le poster, sans remplir le champ wtfname, ne declenchera pas d'erreur a la validation.
 
 
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
