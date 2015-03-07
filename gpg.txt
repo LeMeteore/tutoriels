@@ -13,3 +13,12 @@
 # send pub key to public server
 # gpg --send-keys --keyserver a.key.server.url E4635BBE
 # or go to http://pgp.mit.edu/ and copy paste the content of pubkey.txt
+
+# retrieve pubkey of friend
+# go there: http://pgp.mit.edu/ and search for a string
+
+# import pubkey of your friend
+# gpg --import friend_pubkey.txt
+
+# or you can ask directly to the key server
+# gpg --search-keys --keyserver pgp.mit.edu 'friend name or frien email'
