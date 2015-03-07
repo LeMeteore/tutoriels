@@ -22,3 +22,9 @@
 
 # or you can ask directly to the key server
 # gpg --search-keys --keyserver pgp.mit.edu 'friend name or frien email'
+
+# encrypt the file you want to share
+# gpg --encrypt --recipient friend@email.org bonjour.txt
+
+# send file per email or whatever
+# the file should be bonjour.txt.gpg
