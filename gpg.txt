@@ -1,0 +1,15 @@
+# install gnupg
+# apt-get install gnupg
+
+# generate a priv key
+# gpg --gen-key
+
+# verify generated key
+# gpg --list-keys
+
+# generate pub key to a text file
+# gpg -armor --output pubkey.txt --export Nsukami
+
+# send pub key to public server
+# gpg --send-keys --keyserver a.key.server.url E4635BBE
+# or go to http://pgp.mit.edu/ and copy paste the content of pubkey.txt
