@@ -30,6 +30,10 @@
 # encrypt the file you want to share
 # gpg --encrypt --recipient friend@email.org bonjour.txt
 
+# encrypt a message
+# echo "Slt" | gpg --encrypt --armor -r elwan7@gmail.com
+# echo "Slt" | gpg --sign --encrypt --armor -r elwan7@gmail.com
+
 # send file per email or whatever
 # the file should be bonjour.txt.gpg
 
