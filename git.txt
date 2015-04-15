@@ -118,3 +118,14 @@ Solution:
 git commit --verbose
 je peux alors ecrire mon message de commit en voyant exactement
 ce que j'ai modifié et ainsi me souvenir de quoi/pourquoi.
+
+
+Probleme:
+---------
+Copier un fichier ou un repertoire d'une branche a une autre
+
+Solution:
+---------
+En considerant que je suis sur une branche autre que dev:
+git checkout dev -- path/to/your/file
+git checkout dev -- path/to/your/folder
