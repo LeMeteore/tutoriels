@@ -947,6 +947,32 @@ Ainsi, lorsque le formulaire sera rendu dans le html,
 le poster, sans remplir le champ wtfname, ne declenchera pas d'erreur a la validation.
 
 
+DEFINITION D'UN FILTRE CUSTOM QUI SERA UTILISÉ DANS LE CHANGELIST DE L'ADMIN INTERFACE
+--------------------------------------------------------------------------------------
+
+class StatusFilter(SimpleListFilter):
+    title = _('status')
+    parameter_name = 'name'
+
+    def lookups(self, request, model_admin):
+        statuses = set([p.status for p in model_admin.model.objects.all()])
+        return [(s.id, s.lazy_translation_getter('name', str(s.id))) for s in statuses]
+        # You can also use hardcoded model name like "Country" instead of
+        # "model_admin.model" if this is not direct foreign key filter
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status__id__exact=self.value())
+        else:
+            return queryset
+
+la methode lookups va renvoyer ce sur quoi on veut faire le filtre dans le changelist.
+la methode queryset est celle qui sera executée lorsque l'on clique sur un des filtres.
+
+Pour inserer le filtre dans la classe PackModelAdmin:
+class PackModelAdmin(ModelAdmin):
+    list_filter = (StatusFilter,)
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
@@ -1073,6 +1099,6 @@ RETROUVER ADMIN URL POUR UN MODEL:
 
 RECUPERER L'OBJET FORM DE L'ADMIN
 ---------------------------------
-+    def get_form(self, request, obj=None, **kwargs):
-+        form = super(PhotoModelAdmin, self).get_form(request, **kwargs)
-+        return form
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(PhotoModelAdmin, self).get_form(request, **kwargs)
+        return form
