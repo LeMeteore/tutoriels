@@ -1,0 +1,12 @@
+$ sudo apt-get install libgmime-2.6-dev libxapian-dev
+$ tar xvfz mu-<version>.tar.gz  # use the specific version
+$ cd mu-<version>
+$ ./configure && make
+$ sudo make install # mu, mu4e installed
+$ # add mu4e folder to emacs load path /usr/local/share/emacs/site-lisp/mu4e
+$ sudo apt-get install offlineimap
+$ emax ~/.offlineimap #edit configuration
+$ offlineimap # retrieve your emails
+$ mu index
+$ emax ~/.emacs.d/lisp/ #edit mu4e configuration
+$ #launch emacs, and run M-x mu4e
