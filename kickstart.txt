@@ -1102,3 +1102,36 @@ RECUPERER L'OBJET FORM DE L'ADMIN
     def get_form(self, request, obj=None, **kwargs):
         form = super(PhotoModelAdmin, self).get_form(request, **kwargs)
         return form
+
+
+
+COMMENT TESTER UNE VUE:
+-----------------------
+
+- dans une console python:
+
+>>> from django.core import urlresolvers
+>>> urlresolvers.reverse("admin:index")
+'/en-us/admin/'
+>>> urlresolvers.reverse("admin:login")
+'/en-us/admin/login/'
+>>> from django.test import Client
+>>> c = Client()
+>>> u = urlresolvers.reverse("admin:login")
+>>> c.get(u)
+<django.http.response.HttpResponseNotFound object at 0x7fe60069ada0>
+>>> u = urlresolvers.reverse("admin:index")
+>>> c.get(u)
+<django.http.response.HttpResponseRedirect object at 0x7fe60053b198>
+>>> r = c.get(u)
+>>> dir(r)
+['__bytes__', '__class__', '__contains__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_charset', '_closable_objects', '_container', '_convert_to_charset', '_handler_class', '_headers', 'allowed_schemes', 'client', 'close', 'content', 'context', 'cookies', 'delete_cookie', 'flush', 'get', 'has_header', 'items', 'make_bytes', 'reason_phrase', 'request', 'serialize', 'serialize_headers', 'set_cookie', 'set_signed_cookie', 'status_code', 'streaming', 'tell', 'templates', 'url', 'write', 'wsgi_request']
+>>> r.url
+'http://testserver/en/admin/login/?next=/en/admin/'
+>>> r.status_code
+302
+>>> r.streaming
+False
+>>> r.request
+{'REQUEST_METHOD': 'GET', 'wsgi.url_scheme': 'http', 'SERVER_PORT': '80', 'PATH_INFO': '/en/admin/', 'QUERY_STRING': `}
+>>>
