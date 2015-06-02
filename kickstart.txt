@@ -1165,3 +1165,39 @@ class BackOfficeViewsTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         # should be logged in now, fails however
         self.assertTrue(resp.context['user'].is_active)
+
+Djangorest
+----------
+- Installation
+
+pip install djangorestframework
+pip install markdown       # Markdown support for the browsable API.
+pip install django-filter  # Filtering support
+
+- Configuration
+
+Mettre a jour settings.py
+
+INSTALLED_APPS = (
+    ...
+    'rest_framework',
+
+)
+
+Mettre a jour urls.py pour utiliser the browsable api
+
+urlpatterns = [
+    ...
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+
+]
+
+Toute la config rest se trouve dans un dictionnaire dans settings.py:
+
+REST_FRAMEWORK = {
+    # Use the standard django.contrib.auth permissions,
+    # or allow read-only access for unauthendicated users
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        ]
+}
