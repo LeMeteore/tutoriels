@@ -221,8 +221,11 @@ class Person(models.Model):
 Person.people.all() # Person.objects.all() generera une AttributeError exception
 
 Il existe deux raisons pour lesquelles on peut vouloir customizer un manager:
-- ajouter des methodes en plus au manager
-- modifier le queryset que le manager retourne par defaut
+1 - ajouter des methodes en plus au manager
+2 - modifier le queryset que le manager retourne par defaut
+
+1 - ajouter des methodes en plus au manager
+-------------------------------------------
 
 
 Recuperation de ts les packs dont le statut est hors ligne
@@ -257,6 +260,23 @@ offline
 ['en']
 ['en']
 >>>
+
+Les packs recuperés ici sont ceux dont le statut a un nom
+traduit en anglais par "offline"
+
+>>> for p in Pack.objects.filter(status__in=[s.id for s in Status.objects.all() if s.lazy_translation_getter('name') == 'offline']): print(p)
+...
+titre de merde
+un titre de pack
+>>>
+
+
+Recuperation de tous les packs dont le pays est senegal:
+--------------------------------------------------------
+>>> ptam.language('fr').prefetch_related('countries').filter(countries__name="Senegal")
+[<Pack: titre de merde>, <Pack: ki>, <Pack: un titre de pack>]
+>>>
+
 
 GESTION DES UPLOADS D'IMAGES:
 -----------------------------
@@ -420,8 +440,12 @@ le prefixe fr/ sera ajouté a la place de en/
 Dans le cas où le navigateur ne donne pas sa preference,
 LANGUAGE_CODE determinera la langue a utiliser.
 
+Pour determiner la langue courante utilisée par django
+django.utils.translation.get_language()
+ou eventuellement request.LANGUAGE_CODE
+
 les urls que nous voulons soumettre a la traduction
-doivent etre misent ds le tuple i18n_patterns
+doivent etre mises ds le tuple i18n_patterns
 
 les fichiers robots et humans ne seront pas soumis
 a cette gestion automagique d'urls.
