@@ -207,6 +207,57 @@ Ensuite, il nous faut créer un admin, pour le backoffice:
 python manage.py createsuperuser # a executer une et une seule fois bien sur :)
 
 
+MANAGERS:
+---------
+un manager est une interface grace a laquelle les operations sur la bdd sont
+offertes a un modele.
+
+le manager par defaut est objects: Pack.objects.all()
+Mais il est possible de le renommer:
+
+class Person(models.Model):
+      people = models.Manager()
+
+Person.people.all() # Person.objects.all() generera une AttributeError exception
+
+Il existe deux raisons pour lesquelles on peut vouloir customizer un manager:
+- ajouter des methodes en plus au manager
+- modifier le queryset que le manager retourne par defaut
+
+
+Recuperation de ts les packs dont le statut est hors ligne
+----------------------------------------------------------
+pack_tam est un manager au fait des traductions:
+Les packs recuperés ici sont ceux dont le statut a un nom
+traduit en français par "hors ligne"
+
+>>> pack_tam = hvad.utils.get_translation_aware_manager(Pack)
+>>> ptam.language('fr').filter(status__name="hors ligne")
+[<Pack: titre de merde>, <Pack: un titre de pack>]
+>>>
+
+Liste des statuts
+
+>>> statuses = Status.objects.language('fr').all()
+>>> for s in statuses: print(s.lazy_translation_getter('name'))
+...
+hors ligne
+En ligne
+en attente
+
+>>> for p in ptam.language('fr').filter(status__name='hors ligne'): print(p.status)
+...
+offline
+offline
+
+??? plutot etrange
+
+>>> for p in ptam.language('fr').filter(status__name='hors ligne'): print(p.get_available_languages())
+...
+['en']
+['en']
+>>>
+
 GESTION DES UPLOADS D'IMAGES:
 -----------------------------
 Voici la config a ajouter ds le fichier base.py
@@ -973,6 +1024,7 @@ Pour inserer le filtre dans la classe PackModelAdmin:
 class PackModelAdmin(ModelAdmin):
     list_filter = (StatusFilter,)
 
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
@@ -1166,6 +1218,7 @@ class BackOfficeViewsTest(TestCase):
         # should be logged in now, fails however
         self.assertTrue(resp.context['user'].is_active)
 
+
 Djangorest
 ----------
 - Installation
@@ -1201,3 +1254,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         ]
 }
+
+- Serializers:
+
+- Views:
+
+- Urls:
