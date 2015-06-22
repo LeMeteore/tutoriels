@@ -207,6 +207,13 @@ Ensuite, il nous faut créer un admin, pour le backoffice:
 python manage.py createsuperuser # a executer une et une seule fois bien sur :)
 
 
+SCHEMA DE LA BASE DE DONNEES
+----------------------------
+Outil permettant de visualiser les tables: eralchemy
+$ pip install eralchemy
+$ pip install pygraphviz # dommage, no compatible python3
+$ eralchemy -i sqlite:///relative/path/to/db.db -o erd_from_sqlite.png
+
 MANAGERS:
 ---------
 un manager est une interface grace a laquelle les operations sur la bdd sont
@@ -227,6 +234,12 @@ Il existe deux raisons pour lesquelles on peut vouloir customizer un manager:
 1 - ajouter des methodes en plus au manager
 -------------------------------------------
 
+
+
+
+
+QUELQUES EXEMPLES DE MANIPS:
+----------------------------
 
 Recuperation de ts les packs dont le statut est hors ligne
 ----------------------------------------------------------
@@ -517,6 +530,20 @@ Il faut effectuer un import:
 from hvad.models import TranslatableModel, TranslatedFields
 - les classes doivent heriter de TranslatableModel
 - les champs devant etre traduits doivent etre du type TranslatedFields.
+
+Exemple de creation d'un objet avec traductions:
+------------------------------------------------
+
+>>> g = Gender()
+>>> g.save()
+>>> g.id
+6
+>>> gt = GenderTranslation(name='another gender', master_id=6, language_code='en')
+>>> gt.save()
+>>> gt = GenderTranslation(name='un autre genre', master_id=6, language_code='fr')
+>>> gt.save()
+>>>
+
 
 modification de admin.py
 Effectuer les imports suivant:
