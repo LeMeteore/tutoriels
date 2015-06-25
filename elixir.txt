@@ -1,6 +1,72 @@
-# wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && sudo dpkg -i erlang-solutions_1.0_all.deb
+# wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+# sudo dpkg -i # erlang-solutions_1.0_all.deb
 # apt update
 # apt install elixir
 # elixir -v
 
 # trois executables: iex, elixir, elixirc
+
+# mix est un build tool installé avec elixir
+# une des dependances du projet: apt install erlang-src
+# pour installer les sources de erlang
+
+# pour creer un nouveau projet
+# mix new experf
+
+# editer le fichier mix.exs et definir le module main
+def project do
+  [app: :experf,
+   version: "0.0.1",
+   elixir: "~> 1.0.0",
+   escript: [main_module: Experf],
+   deps: deps]
+end
+
+# editer experf/lib/experf.ex et definir main
+
+require Logger
+
+defmodule Experf do
+  def main(_args) do
+    Logger.info "Hello World!"
+  end
+end
+
+$ mix escript.build # compiler
+$ ./experf # executer
+
+# editer le fichier mix.exs et definir une dependence
+defp deps do
+  [
+    {:httpoison, "~> 0.4.2"}
+
+]
+end
+
+$ mix deps.get # pour telecharger notre dependance
+
+# Les dependances sont telechargées dans /home/nsukami/.hex/packages
+# Il existe egalement un repertoire /home/nsukami/.mix/ ?!
+
+# Creation d'un module pour faire des requetes GET
+require Logger
+
+defmodule Experf.Http do
+  def request(id, url) do
+    try do
+      # GET url & pipe the response to handle_response func
+      HTTPoison.get(url) |> handle_response(id)
+    rescue # if exception, log error
+      error in HTTPoison.HTTPError ->
+        Logger.info "#{id}: error (#{inspect error.message})"
+    end
+  end
+
+  defp handle_response(%HTTPoison.Response{status_code: 200}, id) do
+    Logger.info "#{id}: success"
+  end
+
+  defp handle_response(%HTTPoison.Response{status_code: status_code}, id) do
+    Logger.info "#{id}: error (#{status_code})"
+  end
+end
