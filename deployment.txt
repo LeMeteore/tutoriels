@@ -1,0 +1,16 @@
+# groupadd --system webapps
+# useradd --system --gid webapps --shell /bin/bash --home /webapps/wappa awa
+
+# su - postgres # switch to postgres user then
+# createuser --interactive -P # to create a new role named awa
+# password generator: https://www.grc.com/passwords.htm
+# awa/zR5b7AAJ4KMNDgFdW1CPRkSWLOy9qS2HQtEjhtcVGWe8EjXfiqxbP3PIC5wmsTi
+# createdb --owner awa wappa # to create wappa db for awa user
+
+# sudo mkdir -p /webapps/wappa
+# sudo chown -R awa:webapps /webapps/wappa/
+# su - awa
+# pyvenv .
+
+# apres avoir cloné le depot en tant que patt, donner le depot a awa
+# git clone ...; mv wappa /webapps/wappa/
