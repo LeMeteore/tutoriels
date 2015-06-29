@@ -1076,6 +1076,15 @@ class PackModelAdmin(ModelAdmin):
     list_filter = (StatusFilter,)
 
 
+CHANGER MOT DE PASS USER
+------------------------
+>>> from django.contrib.auth.models import User
+>>> u = User.objects.first()
+>>> u.username
+'admin'
+>>> u.set_password('patrick')
+>>> u.save()
+
 EXEMPLE MANIPULATION OBJET POSSEDANT CHAMP DE TYPE IMAGEFIELD:
 --------------------------------------------------------------
 >>> from apps.photo.models import Photo
