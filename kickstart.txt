@@ -1216,6 +1216,130 @@ RECUPERER L'OBJET FORM DE L'ADMIN
         return form
 
 
+FORMULAIRES:
+------------
+
+1- etendre la classe ModelForm:
+-------------------------------
+class PhotoForm(ModelForm):
+    class Meta:
+        model = Photo
+        fields = ("author", "license", "width", "height",
+                  "camera_model", "sensibilite_iso", "focal",
+                  "ouverture", "temps_de_pause", "countries",
+                  "image", "exif_date", "pub_date", "status", "photo_tags",
+                  "title", "description")
+
+
+2- les urls de modification et d'ajout, on utilisera la meme vue a chaque fois:
+-------------------------------------------------------------------------------
+
+    url(r'^catalog/pack/add/$', views.add_pack, {}, name='add_pack'),
+    url(r'^catalog/pack/edit/(?P<id>\d+)/$', views.add_pack, {}, name='edit_pack'),
+    url(r'^catalog/photo/add/$', views.add_photo, name='add_photo'),
+    url(r'^catalog/photo/edit/(?P<id>\d+)/$', views.add_photo, {}, name='edit_photo'),
+
+3- la vue:
+----------
+
+@csrf_protect # csrf protection
+@login_required(login_url='/dashboard/login/') # etre authentifié est requis
+def add_photo(request, id=None):
+    template = 'photo/photo/form.html'
+    if id: # si un id arrive dans la requete, il s'agit d'une modification
+        photo = get_object_or_404(Photo, pk=id) # recuperer l'objet a modif
+        message = _('Photo successfully updated.')
+        # if photo.author != request.user:
+        #     return HttpResponseForbidden()
+    else: # autrement, c'est un ajout
+        photo = Photo(author=request.user) # preparer un objet vide
+        message = _('Photo successfully added.')
+
+    if request.method == 'POST': # si c'est un POST, le formulaire a ete soumis
+        # ne pas oublier request.FILES lorsqu'un fichier a ete uploadé
+        form = PhotoForm(request.POST, request.FILES, instance=photo)
+        if form.is_valid(): # verifier si tout baigne
+            # process data if necessary
+            # save
+            form.save() # sauvegarder
+            #
+            messages.add_message(request, messages.INFO, message) # envoyer un message a l'user
+            # redirect
+            return HttpResponseRedirect(urlresolvers.reverse('dashboard:photos'))
+    else: # si c'est un GET, c'est une demande de formulaire
+        form = PhotoForm(instance=photo) # en creer un vide
+    return render(request, template,
+                  {'form': form})
+
+
+4- le template:
+---------------
+
+<form enctype="multipart/form-data" method="post" action="/foo/">
+
+- veiller a avoir: enctype="multipart/form-data" dans le cas d'un upload de fichier
+- action est facultatif, le form sera posté a l'url l'ayant chargé
+
+il existe plusieurs maniere de rendre un formulaire, la plus simple etant:
+
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+
+
+parce que dans notre form, il y a une image a uploader
+POSTER UN MESSAGE APRES UNE MISE A JOUR OU UN AJOUT:
+----------------------------------------------------
+
+Requis:
+-------
+- 'django.contrib.messages' dans le INSTALLED_APPS setting
+- 'django.contrib.sessions.middleware.SessionMiddleware' dans MIDDLEWARE_CLASSES setting
+- 'django.contrib.messages.middleware.MessageMiddleware' dans MIDDLEWARE_CLASSES setting
+- 'django.contrib.messages.context_processors.messages' dans TEMPLATE_CONTEXT_PROCESSORS setting
+
+Pour envoyer un message depuis une vue:
+---------------------------------------
+
+from django.contrib import messages
+
+messages.add_message(request, messages.INFO, 'Hello world.')
+
+ou bien
+
+messages.debug(request, '%s SQL statements were executed.' % count)
+messages.info(request, 'Three credits remain in your account.')
+messages.success(request, 'Profile details updated.')
+messages.warning(request, 'Your account expires in three days.')
+messages.error(request, 'Document deleted.')
+
+
+Pour afficher le message dans le template:
+------------------------------------------
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+Dans la vue, autre exemple:
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+        {{ message }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 
 COMMENT TESTER UNE VUE:
 -----------------------
