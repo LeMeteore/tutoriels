@@ -1341,6 +1341,54 @@ Dans la vue, autre exemple:
 {% endif %}
 
 
+MANIPULATION AVANCEE DES FORMULAIRES:
+-------------------------------------
+>>> pack = Pack.objects.get(pk=5)
+>>> pp = pack.photos.values_list('id')
+>>> f = PackForm(instance=pack)
+>>> f.fields['photos'].queryset
+[<Photo: ch>, <Photo: las mecas>, <Photo: lou>, <Photo: lou>, <Photo: lou>, <Photo: mou>, <Photo: mou>]
+>>>
+
+
+Retrouver les validateurs par defaut sur un champ du formulaire:
+----------------------------------------------------------------
+>>> from apps.photo.forms import PackForm
+>>> f = PackForm()
+>>> f.fields['photos'].validators
+[]
+>>> f.fields['Image'].validators
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+KeyError: 'Image'
+>>> f.fields['image'].validators
+[]
+>>> f.fields['image'].default_validators
+[]
+>>> for i in f.fields['image'].choices: print(i)
+...
+(`, '---------')
+(49, 'ch')
+(50, 'las mecas')
+(51, 'lou')
+(52, 'lou')
+(53, 'lou')
+(54, 'mou')
+(55, 'mou')
+>>>
+>>> f.fields['image'].valid_value(value=(55, 'mou'))
+False
+>>> f.fields['image'].valid_value(value=55)
+True
+>>>
+
+la methode clean() d'un field, appelle
+- to_python(): transforme la valeur en un type python valide
+- validate(): validation que je ne peux mettre ailleurs
+- run_validators(): execute ts les validateurs du field
+
+la methode clean() retourne un dictionaire: cleaned_data
+
 COMMENT TESTER UNE VUE:
 -----------------------
 
