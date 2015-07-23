@@ -87,3 +87,6 @@ to keep track of dependencies, do not edit.
 $ git clone someurl.com/foo
 $ cd foo
 $ cargo build
+
+A binary crate, a binary rust package, which is executable.
+A library crate, a library rust package, to be used with other programs.
