@@ -1,0 +1,89 @@
+install:
+$ curl -f -L https://static.rust-lang.org/rustup.sh -O
+$ sh rustup.sh
+
+uninstall:
+$ sudo /usr/local/lib/rustlib/uninstall.sh
+
+check install:
+$ rustc --version
+
+doc location:
+cd /usr/local/share/doc/rust
+
+# edit helloworld.rs and add:
+fn main() {
+    println!("Hello, world!");
+}
+
+$ rustc main.rs # compile
+$ ./main # execute
+Hello, world!
+
+# create a rust project
+# with --bin, we're creating a binary program
+# without --bin it's a library
+$ cargo new <path>
+
+# go to project dir
+$ cd <path>
+
+# basic project tree for a lib
+.
+├── Cargo.toml
+└── src
+    └── lib.rs
+
+# basic project tree for a bin
+.
+├── Cargo.toml
+└── src
+    └── main.rs
+
+The .toml file is a configuration file.
+Without this file, you cannot build the proj.
+
+# compile
+$ cargo build
+
+# basic project tree after build
+.
+├── Cargo.lock
+├── Cargo.toml
+├── src
+│   └── lib.rs
+└── target
+    └── debug
+        ├── build
+        ├── deps
+        ├── examples
+        ├── libtesting.rlib
+        └── native
+
+# project tree after build a bin program
+.
+├── Cargo.lock
+├── Cargo.toml
+├── src
+│   └── main.rs
+└── target
+    └── debug
+        ├── build
+        ├── deps
+        ├── examples
+        ├── native
+        └── test_bin
+
+# run
+$ cargo run
+
+# build with optimization
+$ cargo build --release
+
+The .lock file is used by cargo,
+to keep track of dependencies, do not edit.
+
+# the basic workflow will be
+$ git clone someurl.com/foo
+$ cd foo
+$ cargo build
