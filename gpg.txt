@@ -37,9 +37,16 @@
 # send file per email or whatever
 # the file should be bonjour.txt.gpg
 
-# how to delete key
-# before deleting a key, you should first revoke it
+# before deleting a key, you should:
+# first, revoke key locally
+# gpg --import myrevoke.key
+
+# then inform everybody else key is revoked
+# gpg ---send-keys --keyserver hkp://subkeys.pgp.net EE6E8046
+
+# then delete it
 # gpg --delete-secret-and-public-key keyname
+
 
 # backup pubkey
 # gpg -ao mypub.key --export EE6E8046
@@ -56,13 +63,53 @@
 # you are not longer going to be using this key in future
 # and would like to inform people on the Internet also.
 
-# first, revoke key locally
-# gpg --import myrevoke.key
-
-# inform everybody else key is revoked
-# gpg ---send-keys --keyserver hkp://subkeys.pgp.net EE6E8046
 
 # refresh your keys: get new keys from server
 # and install locally
 # to be sure, you have the latest keys of your friends
 # gpg --refresh-keys --keyserver hkp://subkeys.pgp.net
+
+
+# Description of some fields
+
+pub   4096R/29BB17B9 2014-08-21 [expire : 2024-08-18]
+uid                  keybase.io/knibals <knibals@keybase.io>
+sub   4096R/81371D20 2014-08-21 [expire : 2024-08-18]
+
+----------------------------
+
+4096 == the bit length of the key
+RSA == R
+DSA == D
+Elgamal == g (only seen in subkeys)
+
+Historically there was a "G" for an Elgamal key that could both encrypt and sign,
+but that was dropped from OpenPGP. The current lowercase "g" Elgamal is an encrypt-only key.
+
+----------------------------
+
+sub   4096R/81371D20 2014-08-21 [expire : 2024-08-18]
+
+Sub is for subkeys. They are other keys that go along with the main, or primary, key.
+A common usage pattern is for the primary to be used for signing,
+and the subkey used to encryption.
+
+> 3) Some keys have several uid lines, is there a maximum or minimum
+> number here? It looks like a number of email addresses attached to the
+> key, is this correct?
+
+----------------------------
+
+uid                  keybase.io/knibals <knibals@keybase.io>
+
+There is a minimum of 1 uid. There is no maximum.
+There are also "uat" lines, of which there are zero or more.
+A uat is used to store other things aside from text (for example, photo IDs).
+
+----------------------------
+
+> 4) I only have one public keyring, but I assume that it is possible to
+> have several? If so will the -k command list these after each other?
+> The first output line seems to be the actual keyring location.
+
+It is possible to have several.
