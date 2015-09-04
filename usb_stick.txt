@@ -1,14 +1,19 @@
 # on est en mode console et on est root
 
-# detecter les disques montés
-# df
+# une maniere (simple) de detecter le device
+# taper en mode root: dmesg -w et scruter l'ecran
+# lire attentivement les messages affichés
+# noter le nom du device
+
+# sinon
+# faire un df -h en tant que root
 # bien noter la liste1
 # brancher la clé
 # refaire un df
 # demonter le device qui n'etait pas la liste1
 # umount /dev/sdb* ou umount /dev/sdd* (en fct)
 
-# parfois, un ls /dev peut aider a mieux voir,
+# quelques rares fois, un ls /dev peut aider a mieux voir,
 # quand par exemple, la cle n'est pas automatiquement montée
 # un fdisk tabulation peut aussi vs aider a reperer les eventuels
 # disques susceptibles presents mais pas montés
@@ -17,10 +22,15 @@
 # fdisk /dev/sdb
 # l'assistant est assez precis et sympa
 # d n t w
+
 # creer une partion principale, une etendue, une logique
-# veiller a choisir fat32 comme systeme de fichiers
+# veiller a choisir fat32 (b) comme systeme de fichiers
 # ecrire la nouvelle table de partition
 # w
+
+# il ne semble pas necessaire de passer par l'etape (t)
+# en effet, l'etape mkfs.vfat -F 32 s'occupe deja de tout.
+# il est egalement possible de rendre une partition bootable (a)
 
 # formatter le disque
 # si votre partition logique est /dev/sdb5
