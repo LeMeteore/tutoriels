@@ -1,3 +1,15 @@
+# ne pas oublier de creer? une image de demarrage
+# lxc-create -n debian -t debian -f /var/lib/lxc/config
+
+# Repertoire important
+# Copying rootfs to /var/lib/lxc/debian/rootfs
+
+# Ce message signifie que tt s'est bien passé
+# Root password is 'afxWkGPk' please change !
+
+# a la premiere connection et en tant que root
+# fixer le probleme des locales
+# dpkg-reconfigure locales
 # ajouter un bridge
 # apt-get install bridge-utils
 # editer /etc/networking/interfaces
@@ -26,7 +38,7 @@ lxc.network.flags = up
 lxc.network.link = br0
 # mac address could be something random
 # start w/ 00
-lxc.network.hwaddr = 00:11:22:33:44:55 
+lxc.network.hwaddr = 00:11:22:33:44:55
 # une ip etant sur le meme reseau la machine hote
 lxc.network.ipv4 = 192.168.1.35/24
 
