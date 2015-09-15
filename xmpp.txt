@@ -1,0 +1,87 @@
+Jabber/XMPP technologies were invented by Jeremie Miller in 1998.
+
+l'univers xmpp peut etre divisé en services et applications.
+
+* les services sont definis en :
+  - 2 specs published l'ietf
+  - 12 extensions specifications published by the xmpp foundation
+
+* applications are software programs of common interest to individuals
+
+* services: feature that can be used by an application.
+  - core services:
+    - channel encryption: provide encryption connection between client & server
+    - authentication: ensures that entities are first authenticated before communicating
+    - presence: enables you to find out about availability of other entities
+    - contact list: enables you to store a list
+    - one to one messaging: enables you to send message to another entity
+    - multi party messaging: enables you to join a virtual chat room, similar to irc
+    - notifications: enables you to generate a notification and deliver it to multiple subscribers
+
+    - service discovery: enables you to find out which features are supported by other entities
+    - capabilities advertisement: extension to the presence service
+    - structured data forms: enables you to exchanges forms similar to html forms
+    - workflow management: often used in conjunction of data forms, enables interaction in workflows
+    - peer to peer media sessions: enables you to negociate & manage a session to do real time interaction
+
+* applications:
+  - instant messaging:
+    combine 3 of the core services: presence, contact list, one to one messaging.
+  - voip: jingle, xmpp extension for session media service can be used for video, file transfer, ...
+  -
+
+Architecture:
+- jabber server running software like ejabberd and openfire
+- jabber client running software like pidgin, adium
+- all using standard protocol we call xmpp
+
+* Jingle:
+  Jingle provides a reliable mechanism for setting up voice calls over the Internet (see
+  [XEP-0167] for details). Even more interesting, the same basic Jingle methods can be
+  used to negotiate and manage any kind of media session, including video chat, file
+  transfer, and screen sharing. This makes Jingle yet another powerful building block in
+  the XMPP toolkit.
+
+  The basic idea is that Jingle uses XMPP as the signaling channel to set up, manage, and
+  terminate media sessions, whereas the media data itself is sent either peer-to-peer or
+  mediated through a dedicated media relay
+
+* Jingle channels:
+  There are 2 kinds of channels in Jingle,
+  - the signaling channel: used to send messages for overall session management,
+  - the media channel: used to send the media data itself.
+
+  Furthermore, the media channel itself can result in a connection that is either
+  - p2p: a direct connection between 2 clients
+  - or mediated: data sent through a relay server
+
+* Jingle model
+  jingle negociation:
+  - the initiator: offers to start a session
+  - the responder: answers by either agreeing to proceed or declining the invitation
+
+  the offer has 2 parts:
+  - application type: what is going to be exchanged in the session, video?, voice?
+  - transport method: how data is going to be sent, example, using UDP? TCP?
+
+  - The parties negociate parameters related to the application type & work to set up the transports.
+  - If responder accepts, the parties exchange data related to the application type over transport method.
+  - If necessary, certain parameters ca be modified during session
+  - Eventually, session ends
+
+Jingle was first developed for one-to-one voice chat over the Internet. In this case, the
+application type is a Jingle RTP session, as defined in [XEP-0167] using a datagram
+transport method that is appropriate for voice data.
+
+- Network Address Translator (NAT) traversal:
+  - STUN "Session Traversal Utilities for NAT" provides a way for you to find out
+    what your IP address and port look like from outside your firewall (if, that is, you
+    are able to contact a STUN server for address lookups).
+
+  - TURN "Traversal Using Relays around NAT" provides a way for you to relay
+    media data in case you can’t set up a direct, peer-to-peer connection with the other
+    party (if, that is, you are able to find a TURN server for media relaying)
+
+  - ICE "Interactive Connectivity Establishment" provides a consistent way for two
+    endpoints to rank, communicate, and negotiate all the possible combinations of
+    direct and mediated connections between them.
