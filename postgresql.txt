@@ -56,6 +56,66 @@ cet utilisateur correspondra a l'utilisateur systeme créé plus haut
 # createdb --owner=tom tom_database
 
 
+-------------
+CONFIGURATION
+-------------
+
+* linux configuration
+---------------------
+
+- Turn off the OOM killer, it's a bug, not a feature.
+- use ext4 or xfz filesystem
+- set SHMMAX and SHMALL
+
+* Postgresql configuration
+--------------------------
+
+- logging:
+  log_destination = 'csvlog'
+  log_directory = 'pg_log'
+  logging_collector = on
+  log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+  log_rotation_age = 1d
+  log_rotation_size = 1GB
+  log_min_duration_statement = 250ms
+  log_checkpoints = on
+  log_connections = on
+  log_lock_waits = on
+  log_temp_files = 0
+
+- resources:
+  shared_buffers = 2GB # 25% memory to 8GB
+  work_mem = 160MB # (2*RAM)/max_connections)
+  maintenance_work_mem = 500MB # RAM/16
+  effective_cache_size = 4GB # RAM / 2
+  max_connections = 100 # no more than 400 || >400 => frontend pooler
+
+- checkpoints: flush of dirty buffers from memory to disk.
+  checkpoint_segments = 32 # 32 to start, then look at the logs
+  checkpoint_timeout = 5min # 10-30min depends on restart time
+  checkpoint_completion_target = 0.9
+
+- planner: the planner is ...
+  effective_io_concurrency = number of i/o channels of ignore it
+  random_page_cost = 3.0 for a typical RAID10 array, 2.0 for a SAN
+
+* Easy performance boost
+------------------------
+
+- general system stuff
+  do not run anything besides postgresql on the host
+
+- stupid database tricks (don't do that)
+  sessions in db
+  constantly updated accumulator records
+  task queues in db
+  using db as a filesystem
+  very long running transactions
+
+  using insert instead of copy for bulk loading data
+  unanchored text queries like '%this%'; use the built in full text search
+
+
 -------------------
 IMPORTANT A SAVOIR:
 -------------------
