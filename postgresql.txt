@@ -110,3 +110,52 @@ copie
 
 # CREATE DATABASE dbname TEMPLATE template0; -- depuis une console psql
 # createdb -T template0 dbname # depuis le shell linux
+
+-------------
+
+
+Inside a single postgresql server, there is tables grouped in databases, grouped in cluster.
+
+
+- Retrouver la liste des roles:
+-------------------------------
+
+postgres=# select rolname from pg_roles;
+ rolname
+----------
+ wappa
+ postgres
+(2 lignes)
+
+postgres=# \dg
+                                    Liste des roles
+ Nom du role |                          Attributs                           | Membre de
+-------------+--------------------------------------------------------------+-----------
+ postgres    | Superutilisateur, Creer un role, Creer une base, Réplication | {}
+ wappa       |                                                              | {}
+
+
+- Roles, databases
+------------------
+
+postgres=# select datname, datdba from pg_database;
+  datname  | datdba
+-----------+--------
+ template1 |     10
+ template0 |     10
+ postgres  |     10
+ wappa     |  16384
+(4 lignes)
+
+postgres=# select rolname, datname
+postgres-# from pg_roles, pg_database
+postgres-# where pg_roles.oid = pg_database.datdba;
+ rolname  |  datname
+----------+-----------
+ wappa    | wappa
+ postgres | template1
+ postgres | template0
+ postgres | postgres
+(4 lignes)
+
+postgres=#
