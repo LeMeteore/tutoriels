@@ -31,6 +31,14 @@ Cet utilisateur sera utilisé pour une connection via la console
 Pour se connecter depuis une appli web,
 il est preferable de créer un autre utilisateur.
 
+A user is a "role" that can log into the system.
+A "role" is a database object that:
+  - can own other objects
+  - has privileges
+
+postgres=# select * from pg_roles ;
+
+
 # créer un utilisateur systeme
 # useradd tom
 # definir son mot de passe
