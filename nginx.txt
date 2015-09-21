@@ -1,10 +1,10 @@
 proxy:
 ------
-quelqu'un ou quelque chose, 
-agissant au nom de quelqu'un d'autre, 
+quelqu'un ou quelque chose,
+agissant au nom de quelqu'un d'autre,
 ou quelque chose d'autre.
 
-il s'agit generalement d'un serveur, 
+il s'agit generalement d'un serveur,
 agissant au nom d'un ordinateur
 
 forward proxy (Y):
@@ -42,6 +42,48 @@ le reverse proxy agit au nom du serveur qui offre le service
 
 nginx:
 ------
-un reverse proxy en premier, un serveur http en second. 
-En effet, la premiere chose importante pr nginx, ce sont les urls, 
+un reverse proxy en premier, un serveur http en second.
+En effet, la premiere chose importante pr nginx, ce sont les urls,
 et non les fichiers.
+
+
+Installation:
+-------------
+
+
+
+Verification de l'installation:
+-------------------------------
+
+kintanu:~# nginx -V
+nginx version: nginx/1.6.2
+TLS SNI support enabled
+configure arguments: --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-ipv6 --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_addition_module --with-http_dav_module --with-http_geoip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_spdy_module --with-http_sub_module --with-http_xslt_module --with-mail --with-mail_ssl_module --add-module=/tmp/buildd/nginx-1.6.2/debian/modules/nginx-auth-pam --add-module=/tmp/buildd/nginx-1.6.2/debian/modules/nginx-dav-ext-module --add-module=/tmp/buildd/nginx-1.6.2/debian/modules/nginx-echo --add-module=/tmp/buildd/nginx-1.6.2/debian/modules/nginx-upstream-fair --add-module=/tmp/buildd/nginx-1.6.2/debian/modules/ngx_http_substitutions_filter_module
+
+
+Fichier de configuration le plus simple:
+----------------------------------------
+- editer le fichier /some/path/to//nginx.conf et y ajouter le contenu suivant:
+
+events {
+
+
+}
+
+http {
+    server {
+
+    }
+}
+
+kintanu:~# nginx -c /home/nsukami/tutorial/nginx.conf # lancer nginx avec un autre configuration
+kintanu:~#
+kintanu:~# ps aux | grep nginx # retrouver les processus nginx
+nsukami  17230  0.0  0.0   4224   632 pts/3    S+   19:54   0:00 emacsclient -cnw nginx.txt
+nsukami  17368  0.0  0.0   4224   672 pts/4    S+   20:09   0:00 emacsclient -cnw nginx.conf
+root     17384  0.0  0.0  91060  1268 ?        Ss   20:10   0:00 nginx: master process nginx -c /home/nsukami/tutorial/nginx.conf
+nobody   17385  0.0  0.0  91292  3812 ?        S    20:10   0:00 nginx: worker process
+root     17412  0.0  0.0  12744  2168 pts/2    S+   20:14   0:00 grep --color nginx
+kintanu:~#
+kintanu:~# curl http://localhost # afficher la page d'accueil de nginx
+kintanu:~#
