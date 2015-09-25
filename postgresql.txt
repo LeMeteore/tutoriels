@@ -22,6 +22,7 @@ l'utilisateur pouvant se connecter a la console postgresql: postgres
 apres une nouvelle installation, cet utilisateur sera créé
 Cet utilisateur sera utilisé pour une connection via la console
 
+
 # # Switch to user "postgres"
 # sudo su postgres
 
@@ -73,7 +74,13 @@ CONFIGURATION
 
 - Turn off the OOM killer, it's a bug, not a feature.
 - use ext4 or xfz filesystem
-- set SHMMAX and SHMALL
+- set SHMMAX and SHMALL (debian specific):
+  # sysctl -w kernel.shmmax=17179869184
+  # sysctl -w kernel.shmall=4194304
+
+  # # or
+  # echo 17179869184 >/proc/sys/kernel/shmmax
+  # echo 4194304 >/proc/sys/kernel/shmall
 
 * Postgresql configuration
 --------------------------
@@ -226,4 +233,46 @@ postgres-# where pg_roles.oid = pg_database.datdba;
  postgres | postgres
 (4 lignes)
 
+postgres=#
+
+
+COMMENT CREER SON PROPRE CLUSTER
+--------------------------------
+
+A database cluster is a collection of databases that is managed
+by a single instance of a running database server.
+
+- Pour creer un cluster, saisir les commandes:
+
+# mkdir -p /usr/local/pgsql/{data,log,run}
+# chown -R postgres /usr/local/pgsql
+#
+# su postgres
+$ pg_createcluster -d /usr/local/pgsql/data/ 9.4 test_cluster
+Creating new cluster 9.4/test_cluster ...
+  config /etc/postgresql/9.4/test_cluster
+  data   /usr/local/pgsql/data/
+  locale fr_FR.utf-8
+Drapeaux de /usr/local/pgsql/data/ initialisés comme -------------e-C
+  port   5433
+
+There is some other default:
+- log: /var/log/postgresql/postgresql-9.4-test_cluster.log
+- run: /var/run/postgresql/9.4-test_cluster.pid
+
+- Pour demarrer le nouveau cluster (dans une console):
+$ pg_ctlcluster 9.4 test_cluster start --foreground
+2015-09-25 06:18:40 GMT [3110-1] LOG:  le système de bases de données a été arrêté à 2015-09-25 06:18:32 GMT
+2015-09-25 06:18:40 GMT [3110-2] LOG:  MultiXact member wraparound protections are now enabled
+2015-09-25 06:18:40 GMT [3109-1] LOG:  le système de bases de données est prêt pour accepter les connexions
+2015-09-25 06:18:40 GMT [3114-1] LOG:  lancement du processus autovacuum
+
+- Et dans une autre console:
+# su postgresql
+$ postgres@kintanu:~$ psql -p 5433
+psql (9.4.4)
+Saisissez « help » pour l'aide.
+
+postgres=# \d
+Aucune relation trouvée.
 postgres=#
