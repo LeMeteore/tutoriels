@@ -1,0 +1,60 @@
+WAMP: Web Application Messaging Protocol
+----------------------------------------
+      a protocol to do RPC, PUB/SUB over websockets
+      protocole créé pour tirer parti des websockets.
+
+Permet de faire communiquer en temps reels, technos differentes,
+processus differents, machines differentes.
+
+
+RPC & PUB/SUB
+-------------
+- depuis et vers:js, python, c++, java, php
+
+RPC, REMOTE PROCEDURE CALL
+--------------------------
+- appel d'une fonction d'un autre code a distance via websockets
+- asynchrone, performant, propre, leger, simple
+
+Mise en oeuvre:
+- des clients utilisant wamp.ws via une bibliotheque
+- un serveur central entre tous les clients
+- des moyens de securisation
+- Vous ne codez que les clients
+- durant le dev, utiliser wss://demo.crossbar.io/ws comme routeur
+- en prod, installer crossbar.io
+
+AutobahnPython, AutobahnJs: libs permettant au client de parler WAMP.
+Crossbar.io: routeur le plus complet.
+
+PUB/SUB
+-------
+- un client s'abonne a un sujet (subscribe)
+- un client publie un message sur le sujet (publish)
+- tous les abonnés au sujet reçoivent le message
+
+Mise en oeuvre identique, client avec AutobahnPython et Routeur avec crossbar.io
+
+Installation
+------------
+
+- Requirements:
+# apt install emacs24-nox tmux git-core build-essential libssl-dev libffi-dev libreadline-dev libbz2-dev libsqlite3-dev libncurses5-dev
+
+- install pypy:
+$ cd $HOME
+$ wget https://bitbucket.org/squeaky/portable-pypy/downloads/pypy-2.6-linux_x86_64-portable.tar.bz2
+$ tar xvjf pypy-2.6-linux_x86_64-portable.tar.bz2
+
+- install pip:
+$ wget https://bootstrap.pypa.io/get-pip.py
+$ ~/pypy-2.6-linux_x86_64-portable/bin/pypy get-pip.py
+
+- install crossbar:
+~/pypy-2.6-linux_x86_64-portable/bin/pip install crossbar[all]
+
+
+Create an app: js/autobahnjs based hello world
+----------------------------------------------
+
+$ crossbar init --template hello:browser --appdir $HOME/hello
