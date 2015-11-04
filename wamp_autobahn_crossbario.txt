@@ -58,3 +58,16 @@ Create an app: js/autobahnjs based hello world
 ----------------------------------------------
 
 $ crossbar init --template hello:browser --appdir $HOME/hello
+
+
+CONFIGURATION
+-------------
+
+Configuration la plus simple,
+- controllers, un dictionnaire
+- workers, une liste de dictionnaires, chacun etant un worker
+
+Un worker peut etre de type
+- router: carrefour entre callers and callees, publishers and subscribers (au moins un)
+- guest: worker processes that run application components written in languages other than Python
+- container: worker processes that host application classes deriving from autobahn.twisted.wamp.ApplicationSession.
