@@ -1,5 +1,6 @@
 # ne pas oublier de creer? une image de demarrage
 # lxc-create -n debian -t debian -f /var/lib/lxc/config
+# lxc-create -n debain -t debian
 
 # Repertoire important
 # Copying rootfs to /var/lib/lxc/debian/rootfs
@@ -8,9 +9,10 @@
 # Root password is 'afxWkGPk' please change !
 
 # a la premiere connection et en tant que root
-# fixer le probleme des locales
+# fixer le probleme des locales (dans le container)
 # dpkg-reconfigure locales
-# ajouter un bridge
+
+# ajouter un bridge (dans la machine hote)
 # apt-get install bridge-utils
 # editer /etc/networking/interfaces
 
