@@ -1,0 +1,15 @@
+Apres une migration vers django 1.8.5:
+--------------------------------------
+
+J'ai du
+- migrer tous les autres paquets, floppyforms, restframework, taggit, ...
+- modifier mon modele, et supprimer l'attribut max_length pour les champs de type int
+- supprimer l'attribut null=True pour les champs de type many to many
+- supprimer la base de données sqlite
+- refaire un makemigrations
+- refaire un migrate
+- refaire un createsuperuser
+
+Comment voir les migrations non appliquées:
+- python manage.py migrate --list # 1.7
+- python manage.py showmigrations --list
