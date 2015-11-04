@@ -1,3 +1,9 @@
+Lu sur stackoverflow :)
+
+""Git is a saw with no guard that makes it easy to cut your own arm off.
+But it also comes with an easy arm reattachment kit,
+and you can even attach the arm to your knee if you want."
+
 Git est un outil parfois tres etrange.
 Je ne chercherai pas a le maitriser, juste a m'en servir du mieux que je peux.
 En bas, une liste de problemes/soucis avec la solution correspondante.
@@ -129,3 +135,22 @@ Solution:
 En considerant que je suis sur une branche autre que dev:
 git checkout dev -- path/to/your/file
 git checkout dev -- path/to/your/folder
+
+
+Souci:
+------
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+Solution:
+---------
+Cela signifie simplement que le HEAD pointe sur un commit qui n'est
+référencé ni par un tag, ni par une branche. exemple:
+
+HEAD est maintenant sur 8b409dc... initial
+~/GITHUB/example (8b409dc)
+⇒
+
+N'ayant ni nom de branche, ni nom de travail referençant le commit actuel,
+et bien, c'est le hash du commit qui est affiché entre les parentheses.
