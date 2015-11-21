@@ -13,3 +13,11 @@ J'ai du
 Comment voir les migrations non appliquées:
 - python manage.py migrate --list # 1.7
 - python manage.py showmigrations --list
+
+
+Passage a python3.5:
+- installation: apt install libsqlite3-dev
+- installation python3.5: ./configure && make && make altinstall
+- creation d'un nouvel env virtuel: pyvenv-3.5 ~/envs/w2
+- activation du nouvel env virtuel: source ~/envs/w2/bin/activate
+- installation des requirements: pip install -r requirements/dev.txt
