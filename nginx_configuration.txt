@@ -1,0 +1,123 @@
+Nginx custom installation:
+--------------------------
+
+# install some requirements
+# apt-get -y install build-essential zlib1g-dev libpcre3 libpcre3-dev libbz2-dev libssl-dev tar unzip libgeoip-dev
+
+# download 3rd party modules
+# extract archives
+# save the differents paths, we'll use them for the configure command
+
+# download nginx archive, extract, cd, then:
+
+# ./configure
+--with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' \
+--with-ld-opt=-Wl,-z,relro \
+--sbin-path=/usr/sbin/nginx
+--prefix=/usr/share/nginx \
+--pid-path=/run/nginx.pid \
+--lock-path=/var/lock/nginx.lock \
+--conf-path=/etc/nginx/nginx.conf \
+--with-zlib=../zlib-1.2.8
+--http-log-path=/var/log/nginx/access.log \
+--error-log-path=/var/log/nginx/error.log \
+--http-proxy-temp-path=/var/lib/nginx/proxy \
+--http-scgi-temp-path=/var/lib/nginx/scgi \
+--http-uwsgi-temp-path=/var/lib/nginx/uwsgi \
+--http-client-body-temp-path=/var/lib/nginx/body \
+--http-fastcgi-temp-path=/var/lib/nginx/fastcgi \
+--with-debug \
+--with-ipv6 \
+--with-pcre-jit \
+--without-mail_pop3_module \
+--without-mail_imap_module \
+--without-mail_smtp_module \
+--with-http_dav_module \
+--with-http_sub_module \
+--with-http_ssl_module \
+--with-mail_ssl_module \
+--with-http_spdy_module \
+--with-http_xslt_module \
+--with-http_geoip_module \
+--with-http_realip_module \
+--with-http_addition_module \
+--with-http_stub_status_module \
+--with-http_gzip_static_module \
+--with-http_auth_request_module \
+--with-http_image_filter_module \
+--add-module=../ngx_postgres-0.9 \
+--add-module=../ngx_pagespeed-master \
+--add-module=../naxsi-master \
+--add-module=../echo-nginx-module-master \
+--add-module=../gnosek-nginx-upstream-fair-a18b409 \
+--add-module=../ngx_http_substitutions_filter_module-master
+
+# After a successful configure, you should read something like this:
+Configuration summary
+  + using system PCRE library
+  + using system OpenSSL library
+  + md5: using OpenSSL library
+  + sha1: using OpenSSL library
+  + using zlib library: ../zlib-1.2.8
+
+  nginx path prefix: "/usr/share/nginx/"
+  nginx binary file: "/usr/sbin/nginx"
+  nginx configuration prefix: "/etc/nginx"
+  nginx configuration file: "/etc/nginx/nginx.conf"
+  nginx pid file: "/run/nginx.pid"
+  nginx error log file: "/var/log/nginx/error.log"
+  nginx http access log file: "/var/log/nginx/access.log"
+  nginx http client request body temporary files: "/var/lib/nginx/body"
+  nginx http proxy temporary files: "/var/lib/nginx/proxy"
+  nginx http fastcgi temporary files: "/var/lib/nginx/fastcgi"
+  nginx http uwsgi temporary files: "/var/lib/nginx/uwsgi"
+  nginx http scgi temporary files: "/var/lib/nginx/scgi"
+
+# then
+# make
+# make install
+
+# On platforms that support several methods nginx will normally select the most efficient method automatically.
+# --with-poll_module
+# --with-select_module
+# epoll, the efficient method used on Linux 2.6+
+
+# verifier que tout baigne.
+
+# Systemd service script, to start, stop, restart
+# save this file as /lib/systemd/system/nginx.service
+
+# # Stop dance for nginx
+# # =======================
+# #
+# # ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+# # If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+# # and sends SIGTERM (fast shutdown) to the main process.
+# # After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+# # SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+# #
+# # nginx signals reference doc:
+# # http://nginx.org/en/docs/control.html
+# #
+# [Unit]
+# Description=A high performance web server and a reverse proxy server
+# After=network.target
+#
+# [Service]
+# Type=forking
+# PIDFile=/run/nginx.pid
+# ExecStartPre=/usr/sbin/nginx -t -q -g 'daemon on; master_process on;'
+# ExecStart=/usr/sbin/nginx -g 'daemon on; master_process on;'
+# ExecReload=/usr/sbin/nginx -g 'daemon on; master_process on;' -s reload
+# ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid
+# TimeoutStopSec=5
+# KillMode=mixed
+#
+# [Install]
+# WantedBy=multi-user.target
+
+Monitoring:
+-----------
+- httpStubStatusModule: should be built with configure option
+- ngxtop: pip install ngxtop, puis ngxtop -f /var/log/nginx/test.africafilms.tv/access.log
+- luameter: payant :(
