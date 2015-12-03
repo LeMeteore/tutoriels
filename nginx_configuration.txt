@@ -45,7 +45,6 @@ Nginx custom installation:
 --with-http_gzip_static_module \
 --with-http_auth_request_module \
 --with-http_image_filter_module \
---add-module=../ngx_postgres-0.9 \
 --add-module=../ngx_pagespeed-master \
 --add-module=../naxsi-master \
 --add-module=../echo-nginx-module-master \
@@ -83,6 +82,7 @@ Configuration summary
 # epoll, the efficient method used on Linux 2.6+
 
 # verifier que tout baigne.
+# nginx -V
 
 # Systemd service script, to start, stop, restart
 # save this file as /lib/systemd/system/nginx.service
@@ -116,8 +116,92 @@ Configuration summary
 # [Install]
 # WantedBy=multi-user.target
 
+If you still using init scripts
+- there is a init script in this repo for example
+- then, chmod 755 /etc/init.d/nginx
+- then, update-rc.d nginx defaults
+
+In some system, if nginx is complaining about missing directories,
+just create them, for example: (debian, what will i be without you)
+- mkdir -p /var/lib/nginx/body
+- mkdir -p /etc/nginx/sites-available/
+- mkdir -p /etc/nginx/sites-enabled/
+
 Monitoring:
 -----------
 - httpStubStatusModule: should be built with configure option
 - ngxtop: pip install ngxtop, puis ngxtop -f /var/log/nginx/test.africafilms.tv/access.log
 - luameter: payant :(
+- vmstat, to dig
+- strace, to dig
+
+Tuning:
+-------
+- nginx tuning:
+edit the config file: emacs /etc/nginx/nginx.conf
+
+worker_processes  auto; # nb of worker equal nb of processors, cat /proc/cpuinfo
+worker_rlimit_nofile 100000; # nb of files a worker can open
+
+events {
+    use epoll; # best selector method available
+    worker_connections 1024; # nb of connection by worker
+    multi_accept on; # please worker, accept multiple connections at one time
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    access_log off; # not log requests if lots of traffic
+
+    keepalive_timeout  65; # timeout to keep the connection alive
+    keepalive_requests 200; # nb of req served through a keep alive connection*
+    reset_timedout_connection on; # close if client not responding
+    sendfile on;
+    tcp_nopush on; # send all header in a single packet rather than separate packets
+
+    gzip on; # compress before sending response
+    gzip_min_length 256; # compress only if length is
+    gzip_comp_level 3;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript; # what to compress
+
+    # metadata caching,
+    # - open file descriptors
+    # - file descriptors modification time, size, ..
+    # - error status: no file, no permissions, ...
+
+    open_file_cache max=10000 inactive=30s; # cache 10000 entries, flush if inactive during 30s
+    open_file_cache_valid    60s; # validity of cache entry
+    open_file_cache_min_uses 2; # should be accessed at least twice to stay in cache
+    open_file_cache_errors   on; # cache errors while searching a file
+
+}
+
+- operating system tuning:
+  - emacs /etc/sysctl.conf && sysctl -p
+    net.ipv4.tcp_syncookies = 1
+
+  - backlog queue: limit # of pending connections
+  - file descriptors: limit # of active connections
+  - ephemeral ports: limit # of upstream connections
+
+Note:
+adaptative bitrate streaming (most used)
+- http live streaming: hls, from apple
+  - playlist: .m3u8
+  - segment files: .ts
+  - file structure:
+    master playlist: .mp4.m3u8
+    - playlist bitrate 1
+      - segment 1, bitrate 1: .mp4.ts
+      - segment 2, bitrate 1: .mp4.ts
+    - playlist bitrate 2
+      - segment 1, bitrate 2: .mp4.ts
+      - segment 2, bitrate 2: .mp4.ts
+
+- http dynamic streaming: hds, from adobe
+  - manifest: .f4m
+  - index: .f4x
+  - fragment: .f4f
+
+* never use sslv3 in the ssl enable site: ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
