@@ -1,0 +1,34 @@
+REST: REpresentational State Tranfer
+------------------------------------
+
+set of design principles for making
+network communication more scalable/flexible
+
+
+CONSTRAINTS:
+------------
+
+1 client server model:
+  -  a restful service operate on client-server model
+    - server: has resources of interest
+    - client: want to interact with the resource stored on server
+  - requires one-to-one communication
+
+2 a restful service is stateless:
+  - clients, servers, does not keep track of each other's state.
+  - server do not keep track of past requests
+
+3 uniform interface:
+  - identification of resources: each resource is uniquely identified by a stable identifier (uri)
+  - manipulation of resources: client sends json representation of a resource to manipulate that resource
+  - self descriptive messages: http protocol?
+
+4 hypermedia:
+  - data sent to the client contains informations about what can be done next
+
+5 caching:
+  - server responses should be labelled as cacheable or non-cacheable
+
+6 layered system:
+  - there can be more than just servers and clients: proxies, gateways.
+    but every component is constrained to see only the very next component.
