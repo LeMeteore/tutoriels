@@ -8,7 +8,7 @@ Git est un outil parfois tres etrange.
 Je ne chercherai pas a le maitriser, juste a m'en servir du mieux que je peux.
 En bas, une liste de problemes/soucis avec la solution correspondante.
 
-Erreur:
+Souci:
 -------
 Your configuration specifies to merge with the ref 'master'
 from the remote, but no such ref was fetched.
@@ -154,3 +154,41 @@ HEAD est maintenant sur 8b409dc... initial
 
 N'ayant ni nom de branche, ni nom de travail referençant le commit actuel,
 et bien, c'est le hash du commit qui est affiché entre les parentheses.
+
+Souci:
+------
+recuperer une branche deja existante sur le depot distant
+
+Solution:
+---------
+git fetch # pour recuperer ttes branches distantes
+git checkout -b <my_new_branch> <remote>/<branch_name>
+
+
+Souci:
+------
+Je tente de faire un git merge et je me retrouve avec
+le meme fichier, ajouté sur chacune des deux branches:
+
+Unmerged paths:
+#   (use "git add/rm <file>..." as appropriate to mark resolution)
+#
+#       both added:         htdocs/medias/6/16/@/16_MOBI_seancestrouvees_100209.pn_png
+#       both added:         htdocs/medias/6/75/6/@/756_long street
+
+
+Solution a:
+-----------
+Je dois choisir la version du fichier que je veux garder.
+La version se trouvant sur la branche courante,
+ou la version se trouvant sur la branche que je veux merge
+
+$ git checkout --ours nom_du_fichier
+
+Solution b:
+-----------
+Choisir une version correspondant a un certain commit:
+
+$ git checkout HEAD -- nom_du_fichier
+$ git checkout 6a363d8 -- nom_du_fichier
+$ git checkout nom_branche -- nom_du_fichier
