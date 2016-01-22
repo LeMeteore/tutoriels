@@ -192,3 +192,14 @@ Choisir une version correspondant a un certain commit:
 $ git checkout HEAD -- nom_du_fichier
 $ git checkout 6a363d8 -- nom_du_fichier
 $ git checkout nom_branche -- nom_du_fichier
+
+Souci:
+------
+Je suis entrain de resoudre un merge conflict.
+Je ne sais plus ou j'en suis, et je veux recommencer.
+Le tout sans faire un git rebase --abort.
+Je veux juste reprendre avec le conflict courant.
+
+Solution:
+---------
+$ git checkout -m <path/to/file>
