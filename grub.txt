@@ -1,0 +1,23 @@
+# emax /etc/default/grub
+#   info -f grub -n 'Simple configuration'
+
+GRUB_DEFAULT=0 # first entry is 0, second is 1, etc
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet cgroup_enable=memory swapaccount=1"
+GRUB_CMDLINE_LINUX=""
+#GRUB_TIMEOUT_STYLE="countdown"
+#GRUB_BACKGROUND="/boot/grub/AmurLeopard-1600x600px.jpg"
+
+# then run 'update-grub' afterwards to update /boot/grub/grub.cfg.
+
+  Création du fichier de configuration GRUB…
+  Found background image: AmurLeopard-1600x600px.jpg
+  Image Linux trouvée: /boot/vmlinuz-3.16.0-4-amd64
+  Image mémoire initiale trouvée: /boot/initrd.img-3.16.0-4-amd64
+  Ubuntu 15.04 (15.04) trouvé sur /dev/sda7
+
+# then run 'grub-install /dev/sda' to install updated grub
+
+  Installing for i386-pc platform.
+  Installation terminée, sans erreur.
