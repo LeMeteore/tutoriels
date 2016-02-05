@@ -1,0 +1,103 @@
+- Install node version manager first
+------------------------------------
+
+# apt install build-essential libssl-dev
+# su patrick
+# curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.30.2/install.sh | bash
+
+# to install a specifi version of nodejs
+# nvm install v5.5.0
+
+# create a frontend project
+# mkdir rtsupport
+# cd rtsupport
+
+# to create the package.json file: dependencies list
+# npm init
+
+# directory struture:
+- rtsupport/
+  - app.css
+  - index.html
+  - index.js: entry point for the app
+  - alerter.js
+  - components/ directory: store most of our client side js scripts, one file per react component
+    - App.js:
+    - channels/
+      - Channel.jsx
+      - ChanneForm.jsx
+      - ChannelList.jsx
+      - ChannelSection.jsx
+    - messages/
+    - users/
+
+
+# before being able to work
+# npm use v5.5.0
+
+# do not forget to install the serve command for being able to browse our website
+# npm install -g serve
+
+# then to install webpack globally
+# npm install -g webpack
+
+# then manually pack all the chaos inside one file
+# reminder: index.js calls functions from alerter.js
+# but we dont want to source all those script inside our index.html
+# webpack index.js bundle.js
+
+# the best way to proceed is to write a webpack config file: webpack.config.js
+# emacs webpack.config.js
+
+module.exports = {
+  entry: './index.js',
+  output: {
+    path: __dirname,
+    filename: 'bundle.js',
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+      }
+    ]
+  }
+
+}
+
+# we should install babel for this to work
+# babel is letting me use last feature of js right now
+# transforming js to js
+# npm install webpack babel-loader@5.3.3 --save-dev
+
+# then, calling webpack without arguments should work
+# webpack
+Hash: a3f3f3643d7d1e3b030a
+Version: webpack 1.12.13
+Time: 731ms
+    Asset     Size  Chunks             Chunk Names
+bundle.js  1.63 kB       0  [emitted]  main
+    + 2 hidden modules
+
+# let's install webpack-dev-server
+# it will automatically relaunch webpack
+# when changes are made to files or to dependency graph
+# and serve everything to :8080
+# it can also do live reload
+# npm install -g webpack-dev-server
+
+patrick@debian:~/rtsupport$ webpack-dev-server
+http://localhost:8080/webpack-dev-server/
+webpack result is served from /
+content is served from /home/patrick/rtsupport
+Hash: a3f3f3643d7d1e3b030a
+Version: webpack 1.12.13
+Time: 780ms
+    Asset     Size  Chunks             Chunk Names
+bundle.js  1.63 kB       0  [emitted]  main
+chunk    {0} bundle.js (main) 154 bytes [rendered]
+    [0] ./index.js 79 bytes {0} [built]
+    [1] ./alerter.js 75 bytes {0} [built]
+webpack: bundle is now VALID.
