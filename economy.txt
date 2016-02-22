@@ -1,0 +1,61 @@
+;; I am your editor, please describe your program.
+
+Economie d'échelle:
+-------------------
+correspond à la baisse du coût unitaire d'un produit qu'obtient
+une entreprise en accroissant la quantité de sa production.
+
+On parlera ainsi d'économie d'échelle si chaque bien produit
+coûte moins cher à produire lorsque les quantités produites
+ou vendues  augmentent.
+
+Ex:
+Les compagnies d'ecommerce par exemple, beneficient de l'economie d'echelle,
+en centralisant les operations, stockage, maintenance, livraison, etc.
+
+
+Economie collaborative:
+-----------------------
+activité humaine visant à produire de la valeur en commun et
+s'appuyant sur une organisation plus horizontale que verticale,
+la mutualisation des biens, des espaces et des outils
+
+l'usage plutôt que la possession, l'organisation des citoyens en "réseau"
+ou en communautés et généralement l'intermédiation par des plateformes web
+
+Dans un sens plus large, elle inclut:
+- la consommation collaborative (AMAP, couchsurfing, covoiturage etc.)
+- les modes de vie collaboratifs (coworking, colocation, habitat collectif)
+- la finance collaborative (crowdfunding, prêt de pair à pair, cryptocurrency)
+- la production contributive (DIY, Fablabs, maker spaces) et la culture libre.
+
+Ex:
+Uber, Airbnb, Homejoy, ...
+
+Economie circulaire, forme d'economie collaborative:
+----------------------------------------------------
+Désigne un concept économique qui s'inscrit dans le cadre du développement
+durable et qui s'inspire notamment des notions
+- d'économie verte, prenant en compte la protection de l'environnement
+- d’économie de l'usage, echanger vente d'un bien, ctr facturation à l’usage.
+- de l'écologie industrielle: le déchet d'une industrie est recyclé en matière
+première d'une autre industrie ou de la même.
+
+Son objectif est de produire des biens et services tout en limitant fortement
+la consommation et le gaspillage des matières premières, et des sources
+d'énergies non renouvelables
+
+Ex:
+Ne serait-il dès lors pas envisageable de vendre à un agriculteur,
+en lieu et place des bidons de produits chimiques,
+un service intégré de protection de ses cultures facturé à l’hectare.
+
+Ce faisant, la quantité de pesticides introduite dans les champs
+n’est plus le moteur du revenu mais un coût qu’il est désormais avantageux
+de réduire.
+
+La recherche et développement va donc désormais s’évertuer à trouver des solutions moins gourmandes en produits, voire des solutions de substitution
+moins coûteuses à mettre en œuvre.
+
+Ce faisant, le bilan environnemental et social de l’entreprise
+peut s’améliorer en même temps que la réussite économique et financière.
