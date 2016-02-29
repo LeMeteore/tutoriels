@@ -276,3 +276,66 @@ Saisissez « help » pour l'aide.
 postgres=# \d
 Aucune relation trouvée.
 postgres=#
+
+
+####
+
+- how to create a primary key auto increment
+create table customer (
+       id serial primary key,
+       name varchar(15) not null,
+       address varchar(15) not null
+);
+
+- how to create a function to generate pseudo-random unique values:
+CREATE OR REPLACE FUNCTION pseudo_encrypt(VALUE int) returns int AS $$
+DECLARE
+l1 int;
+l2 int;
+r1 int;
+r2 int;
+i int:=0;
+BEGIN
+ l1:= (VALUE >> 16) & 65535;
+ r1:= VALUE & 65535;
+ WHILE i < 3 LOOP
+   l2 := r1;
+   r2 := l1 # ((((1366 * r1 + 150889) % 714025) / 714025.0) * 32767)::int;
+   l1 := l2;
+   r1 := r2;
+   i := i + 1;
+ END LOOP;
+ RETURN ((r1 << 16) + l1);
+END;
+$$ LANGUAGE plpgsql strict immutable;
+
+- Then, use the function in a create table statement:
+create table credit_card (
+       id serial primary key,
+       credit_card_number bigint default pseudo_encrypt(nextval('my_seq')::int),
+       max_amount bigint not null default 300000,
+       expiring_date timestamp with time zone
+);
+
+- how to create a foreign key
+create table account(
+       id serial primary key,
+       account_number bigint default pseudo_encrypt(nextval('my_seq')::int),
+       credit_card_id bigint references credit_card(id)
+);
+
+- another example:
+create table transaction (
+       id serial primary key,
+       amount bigint not null,
+       customer_id bigint references customer(id),
+       account_id bigint references account(id)
+);
+
+###
+
+- how to dump a database, see man pg_dump or man pg_dumpall
+pg_dump --schema=masters oldDB > masters1.sql
+
+- how to restore a database
+cat masters1.sql | psql newDB
