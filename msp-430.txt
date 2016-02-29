@@ -1,0 +1,19 @@
+# cd to the udev rules folder
+# cd /etc/udev/rules.d/
+
+# retrieve udev rules, for being able to use the serial port as non root user
+# wget http://energia.nu/files/71-ti-permissions.rules
+
+# activate new rules
+# service udev restart # or systemctl restart udev
+
+# unplug and replug the board
+
+# as a non root user, retrieve the open-source electronics prototyping platform
+$ wget http://energia.nu/downloads/downloadv3.php?file=energia-0101E0017-linux64.tgz
+
+# unpack, cd, launch
+$ ./energia &
+
+# then, go to the gui and select a serial port, via tools button
+# then select a board, via the tools button

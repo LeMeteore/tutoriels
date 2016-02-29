@@ -1,3 +1,6 @@
+# if installing using tarballs, you should verify signature using the currently installed gpg
+# gpg --verify gnupg-2.1.10.tar.bz2.sig   gnupg-2.1.10.tar.bz2
+
 # install gnupg
 # apt-get install gnupg
 
