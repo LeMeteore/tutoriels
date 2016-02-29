@@ -1,0 +1,139 @@
+First act:
+----------
+
+The actual blockchain story starts in the 1970s,
+when the database as we currently know it was created: the relational model, SQL.
+
+if it does not fit in the database, it does not exist.
+Every time an organization acts in crazy, inflexible ways,
+odds-are there’s a database underneath which has a limited, rigid view of reality.
+
+And it’s simply too expensive to fix the software,
+to make the organization more intelligent. We live in these boxes.
+
+
+Second act:
+-----------
+
+The advent of the web.
+in the 1990s we get mass adoption of networked computers.
+
+We are still riding the technological wave as the network gets smarter,
+smaller and cheaper and starts showing up in things like iot.
+
+Interacting with a single database is easy enough:
+forms, web applications of the kinds you use every day.
+
+But the hard problem is getting databases working together, invisibly,
+for our benefit, or getting the databases to interact smoothly
+with processes running on our own laptops.
+
+Perhaps you want your car insurance company
+to get access to a police report about your car getting broken into.
+
+In all probability you will have to get the data out of one database,
+in the form of a handful of printouts, and then mail them to the company yourself,
+there’s no real connectivity in the systems.
+
+Although in theory information could just flow from
+one database to another with your permission, in practice,
+the technical costs of connecting databases are huge.
+
+And your computer doesn't store your data so it can do all this work for you.
+Instead it's just something you fill in forms on.
+Why are we under-utilizing all this potential so badly?
+
+Because, each enterprise builds their computer system in their own image,
+and these images disagree about what is vital and what is incidental,
+and truth does not flow between them easily.
+
+There are lots of other factors that maintain the gap
+between the theoretical potential of our computers and our everyday use of our computers:
+technological acceleration, constant change, the sheer expense of writing software.
+
+Over and over again, we go back to paper and metaphors from the age of paper,
+because we cannot get the software right, and the core to that problem is that:
+
+We managed to network the computers in the 1990s,
+but we never did figure out how to really network the databases
+and get them all working together.
+
+PEERS MODELS
+------------
+
+Peer model A:
+-------------
+first approach: just directly connect machines together.
+You take Machine A, connect it over a network to Machine B,
+fire transactions down the wire. In theory, Machine B catches them,
+writes them into its own database, and the job is good.
+In practice, there are a few problems here:
+
+problem a:
+A company may believe an order has occurred,
+but this is a speculation about someone else's intentions
+until cold hard cash (or bitcoin) clears all doubts.
+
+problem b:
+A little change to the software on one end or the other, and bugs are introduced.
+
+problem c:
+problem of scaling collaboration. collaboration is easy when we're two.
+the more we are, collaborating, the more connections to debug we'll have.
+
+
+Peer model B:
+-------------
+we pick an organization, and all agree that we will connect to this org
+using their standard interface. Each organization has to get just a single connector right,
+and the picked up org takes 1% off the top, and makes sure that everything clears properly.
+
+problem a:
+an effort to create a neutral backbone rapidly turns into
+being clients of an all-powerful behemoth without which one simply cannot do business.
+
+
+Peer model C:
+-------------
+protocols, it gets people to stop arguing about how to do things,
+and just get on with it and do them.
+
+problem a:
+A common complaint about tools like Gchat or Slack is that
+they do jobs which have perfectly great open protocols in play
+(IRC or XMPP) but do not actually speak those protocols.
+
+there is no way to interoperate between Slack and IRC or Skype or anything else,
+without going through hacked together gateways that may or may not offer solid system performance.
+
+The result is a degradation of the technical ecosystem
+into a series of walled gardens, owned by different companies,
+and subject to the whims of the market.
+
+
+what is blockchain?
+-------------------
+The blockchain architecture is essentially a protocol
+which works as well as hub-and-spoke for getting things done,
+but without the liability of a trusted third party in the center
+which might choose to extract economic rents.
+
+The system has some magic properties,
+which go beyond paper and beyond databases.
+We call it "distributed consensus" but that's just
+a fancy way of saying that everybody agrees, in the end,
+about what truth (in your bank balance, in your contracts) is.
+
+Once you think of cash as a special kind of form,
+and cash transactions as paper shuffling to move stuff around in databases,
+it's pretty easy to see bitcoin clearly.
+
+It's not an exaggeration to say that Bitcoin has stated us
+on the way out of a 40 year deep hole created by the limits of our database technology.
+Whether it can effect real change at a fiscal level remains to be seen.
+
+
+Peer model D: ETHEREUM
+----------------------
+Bitcoin's blockchain stores financial transactions.
+Ethereum's blockchain stores smart contracts.
