@@ -339,3 +339,57 @@ pg_dump --schema=masters oldDB > masters1.sql
 
 - how to restore a database
 cat masters1.sql | psql newDB
+
+- how to import csv, inside psql prompt
+copy users (id, name, address) from '/path/to/csv/file.csv' delimiter ',';
+
+INDEXES:
+--------
+- clustered index:
+  les données sont stockées "dans un ordre bien distinct" sur le disque.
+  Uniquement un seul par table, car on ne peut ordonner que suivant un seul critere.
+  Caveat: demande du temps a l'ecriture, car les données doivent etre reordonnées.
+  Avantages: temps de lecture de la table: court.
+
+- non clustered index:
+  conservent une liste contenant des pointeurs vers les données sur le disques.
+  Possible d'en avoir plusieurs par table.
+  Caveat: each new index will increase the time it takes to write new records.
+
+
+HOW INDEXES WORK:
+-----------------
+On va utiliser la table suivante:
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    first_name character varying(60),
+    last_name character varying(60),
+    email character varying(160),
+    gender character varying(6),
+    created_at date
+);
+
+Commençons par analyser le plan d'execution de la requete select all.
+Pour cela, on va utiliser la commande explain.
+
+postgres=# explain select * from users;
+                        QUERY PLAN
+----------------------------------------------------------
+ Seq Scan on users  (cost=0.00..20.00 rows=1000 width=48)
+(1 ligne)
+
+Cout estimé pour cette requete: sensiblement de 0 à 20.
+
+Analysons ensuite le plan d'execution de la meme requete, avec une clause where
+
+postgres=# explain select * from users where email = 'phughes5@nbcnews.com';
+                        QUERY PLAN
+----------------------------------------------------------
+ Seq Scan on users  (cost=0.00..22.50 rows=1 width=48)
+   Filter: ((email)::text = 'phughes5@nbcnews.com'::text)
+(2 lignes)
+
+Cout estimé pour cette requete: sensiblement 0 à 22.50. Le cout est devenu plus elevé, mince.
+
+Ajoutons un index sur la colonne email, grace a la commande create index
