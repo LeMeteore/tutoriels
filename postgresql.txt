@@ -393,3 +393,11 @@ postgres=# explain select * from users where email = 'phughes5@nbcnews.com';
 Cout estimé pour cette requete: sensiblement 0 à 22.50. Le cout est devenu plus elevé, mince.
 
 Ajoutons un index sur la colonne email, grace a la commande create index
+postgres=# create index email_idx on users using btree(email);
+postgres=# explain select * from users where email = 'phughes5@nbcnews.com';
+                              QUERY PLAN
+----------------------------------------------------------------------
+Index Scan using email_idx on users  (cost=0.28..8.29 rows=1 width=48)
+  Index Cond: ((email)::text = 'phughes5m@nbcnews.com'::text)
+
+Le cout vient de passer de 22.50 à 8.29, grace a l'index, la requete est plus performante.
