@@ -1,0 +1,21 @@
+install
+$ wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
+$ sudo tar -C /usr/local -xzf go1.5.3.linux-amd64.tar.gz
+
+test
+$ export PATH=$PATH:/usr/local/go/bin
+$ export GOPATH=$HOME/work
+$ mkdir src/github.com/user/hello
+$ emacs src/github.com/user/hello/hello.go
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Printf("hello, world\n")
+}
+
+$ go install github.com/user/hello
+
+uninstall
+sudo rm /usr/local/go
