@@ -137,3 +137,55 @@ Peer model D: ETHEREUM
 ----------------------
 Bitcoin's blockchain stores financial transactions.
 Ethereum's blockchain stores smart contracts.
+
+
+BUT HOW BITCOIN WORKS
+---------------------
+
+You get into the network for the first time, so you should request a copy
+of the all the transactions made since the begining. Also named the ledger.
+
+
+- What is a ledger:
+-------------------
+A registry, a file containing all ever made transactions.
+This file is shared by all the nodes of the network.
+
+When you install bitcoin wallet software for the first time,
+it first download every transactions ever made and check each one validity,
+from the last, to the very first one.
+
+This operation can take over 24 hours, but it will be done only once.
+You're basically checking, for each transaction:
+digital signatures, inputs, outputs.
+
+
+- What is a transaction:
+------------------------
+it's just a broadcast message.
+For example, "Sends five bitcoins from Alice to Bob".
+Every node receiving the message will update their copy of the ledger.
+
+A transaction, in more details contains:
+* a message: send five btc to Bob
+* a digital signature: the msg signed with my priv key
+* a public key: Bob public key
+* inputs: refs to prev transact° showing that
+  - I was the valid recipient of previous transactions
+  - I received enough btc to do the current transaction
+  - I did not spent the btc gained in the referenced transact°
+* outputs:
+  - the resulting amount of btc owned by the recipient, Bob
+  - a puzzle to be solved
+
+
+- What is your balance:
+---------------------
+Owning btc means, there are transactions in the ledger,
+pointing to your pubkey and not spent (not used as inputs to others trans°)
+
+To know your balance, iterate through all the trans ever made
+and add up the unspent inputs.
+
+
+(PS: there is an index maintaining all the unspent transactions)
