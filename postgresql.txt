@@ -12,6 +12,53 @@ alternative, installer la version 9.1
 # Install on any Ubuntu
 # sudo apt-get install -y postgresql postgresql-contrib
 
+NB:
+pour mettre a jour postgresql, il faudra
+- editer le fichier /etc/apt/sources.list.d/pgdg.list
+- et sur la ligne "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
+- remplacer trusty par un nom de distribution plus recente, par exemple: jessie
+- ensuite faire un apt update suivi d'un apt upgrade
+
+Eventuel warning declenchés par la maj, warning du a mon utilisation de postgis:
+postgis (2.2.0~rc1+dfsg-1~exp2) experimental; urgency=medium
+
+  Debian is now shipping PostGIS version 2.2 and dropped support for 2.1,
+  meaning bug or security fixes will no longer be provided for the older
+  one. This means it is strongly recommended to migrate all databases to the
+  newer PostGIS version 2.2 as soon as possible.
+
+  Of course, databases that are already using PostGIS 2.1 will continue to
+  work. Note, however, that with this upgrade it is no longer possible
+  to create version 2.1 of the extension PostGIS. Instead, 'CREATE
+  EXTENSION postgis;' will now give you version 2.2. Note that this can also
+  affects backups.
+
+ -- Markus Wanner <markus@bluegap.ch>  Sat, 26 Sep 2015 16:07:18 +0200
+
+Si tout s'est bien passé, je devrais avoir un ecran a peu pres semblable a ceci:
+
+update-alternatives: utilisation de « /usr/share/postgresql/9.5/man/man1/psql.1.gz » pour fournir « /usr/share/man/man1/psql.1.gz » (psql.1.gz) en mode automatique
+Paramétrage de postgresql-9.5 (9.5.1-1.pgdg80+1) ...
+Creating new cluster 9.5/main ...
+  config /etc/postgresql/9.5/main
+  data   /var/lib/postgresql/9.5/main
+  locale fr_FR.UTF-8
+  socket /var/run/postgresql
+  port   5434
+update-alternatives: utilisation de « /usr/share/postgresql/9.5/man/man1/postmaster.1.gz » pour fournir « /usr/share/man/man1/postmaster.1.gz » (postmaster.1.gz) en mode automatique
+Paramétrage de postgresql-9.5-postgis-scripts (2.2.1+dfsg-2.pgdg80+1) ...
+Paramétrage de postgresql-9.5-postgis-2.2 (2.2.1+dfsg-2.pgdg80+1) ...
+Paramétrage de postgresql-contrib-9.5 (9.5.1-1.pgdg80+1) ...
+Paramétrage de postgresql-doc-9.4 (9.4.6-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-9.1 (9.1.20-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-9.2 (9.2.15-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-9.3 (9.3.11-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-9.4 (9.4.6-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-9.5 (9.5.1-1.pgdg80+1) ...
+Paramétrage de postgresql-server-dev-all (172.pgdg80+1) ...
+Traitement des actions différées (« triggers ») pour libc-bin (2.19-18+deb8u3) ...
+
+
 modifier le fichier de configuration de postgresql, pour permettre les connections distantes
 ceci n'est strictement pas conseillé sur une machine de production
 
