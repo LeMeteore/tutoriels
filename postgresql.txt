@@ -316,7 +316,7 @@ $ pg_ctlcluster 9.4 test_cluster start --foreground
 
 - Et dans une autre console:
 # su postgresql
-$ postgres@kintanu:~$ psql -p 5433
+$ postgres@kintanu:~$ psql -p 5433 # connection a un cluster different du cluster par defaut
 psql (9.4.4)
 Saisissez « help » pour l'aide.
 
@@ -381,14 +381,21 @@ create table transaction (
 
 ###
 
-- how to dump a database, see man pg_dump or man pg_dumpall
+- HOW TO DUMP A DATABASE, SEE MAN PG_DUMP OR MAN PG_DUMPALL
+-----------------------------------------------------------
 pg_dump --schema=masters oldDB > masters1.sql
 
-- how to restore a database
+
+- HOW TO RESTORE A DATABASE
+---------------------------
 cat masters1.sql | psql newDB
 
-- how to import csv, inside psql prompt
+
+- HOW TO IMPORT CSV, INSIDE PSQL PROMPT
+---------------------------------------
 copy users (id, name, address) from '/path/to/csv/file.csv' delimiter ',';
+
+
 
 INDEXES:
 --------
@@ -448,3 +455,80 @@ Index Scan using email_idx on users  (cost=0.28..8.29 rows=1 width=48)
   Index Cond: ((email)::text = 'phughes5m@nbcnews.com'::text)
 
 Le cout vient de passer de 22.50 à 8.29, grace a l'index, la requete est plus performante.
+
+
+SQL PERFORMANCE OF JOIN AND WHERE EXISTS
+----------------------------------------
+postgres=# create extension pgcrypto; -- pour pouvoir utiliser la fonction  gen_salt
+
+postgres=# -- CREATION D'UNE TABLE PRODUCT
+postgres=# create table p(
+  p_id serial primary key,
+  p_name varchar unique
+);
+
+postgres=# -- INSERTION DE VALEURS ALEATOIRES A PARTIR D'UNE SERIE
+postgres=# insert into p (p_name) select substr(gen_salt('md5'), 4) from generate_series(1, 1000000);
+
+
+postgres=# -- CREATION D'UNE TABLE ORDER, UN PRODUIT PEUT APPARAITRE DANS +IEURS COMMANDES
+postgres=# create table o (o_id serial primary key, p_id integer references p (p_id));
+
+
+postgres=# -- INSERTION DE VALEURS ALEATOIRES
+postgres=# insert into o (p_id)
+postgres-# select rnd_val
+postgres-# from (select trunc(random() * 249999 + 1)::int as rnd_val
+postgres(#       from generate_series(1, 1000000)) as gen;
+
+
+postgres=# -- CREATION D'UN INDEX SUR LA COLONNE P_ID DE LA TABLE O
+postgres=# create index p_idx on o using btree(p_id);
+
+
+postgres=# -- ANALYSE DU COUT D'UNE JOINTURE
+postgres=# explain analyze select p_name from p join o using(p_id);
+Merge Join  (cost=5.88..64611.19 rows=1000000 width=9) (actual time=0.065..1138.921 rows=1000000 loops=1)
+   Merge Cond: (p.p_id = o.p_id)
+   ->  Index Scan using p_pkey on p  (cost=0.42..31389.42 rows=1000000 width=13) (actual time=0.021..72.036 rows=250000 loops=1)
+   ->  Index Only Scan using p_idx on o  (cost=0.42..43680.40 rows=1000000 width=4) (actual time=0.035..794.401 rows=1000000 loops=1)
+         Heap Fetches: 1000000
+ Planning time: 0.575 ms
+ Execution time: 1191.973 ms
+(7 lignes)
+
+
+postgres=# -- COMPARONS LE COUT DE LA JOINTURE AVEC CELUI D'UNE CLAUSE WHERE EXISTS
+postgres=# explain analyze select count(p_name) from p where exists (select 1 from o where p.p_id = o.p_id);
+Aggregate  (cost=65126.32..65126.33 rows=1 width=9) (actual time=1106.187..1106.187 rows=1 loops=1)
+   ->  Merge Semi Join  (cost=5.88..64611.19 rows=206053 width=9) (actual time=0.060..1078.128 rows=245450 loops=1)
+         Merge Cond: (p.p_id = o.p_id)
+         ->  Index Scan using p_pkey on p  (cost=0.42..31389.42 rows=1000000 width=13) (actual time=0.020..73.441 rows=250000 loops=1)
+         ->  Index Only Scan using p_idx on o  (cost=0.42..43680.40 rows=1000000 width=4) (actual time=0.031..802.883 rows=1000000 loops=1)
+               Heap Fetches: 1000000
+ Planning time: 0.533 ms
+ Execution time: 1094.585 ms
+
+
+A RETENIR:
+----------
+EXISTS is used to return a boolean value, JOIN returns a whole other table
+
+EXISTS is only used to test if a subquery returns results,
+and short circuits as soon as it does.
+JOIN is used to extend a result set by combining it with
+additional fields from another table to which there is a relation.
+
+In general, use EXISTS when:
+
+    You don't need to return data from the related table
+    You have dupes in the related table (JOIN can cause duplicate rows if values are repeated)
+    You want to check existence (use instead of LEFT OUTER JOIN...NULL condition)
+
+If you have proper indexes, most of the time the EXISTS will perform identically to the JOIN.
+The exception is on very complicated subqueries, where it is normally quicker to use EXISTS.
+
+If your JOIN key is not indexed,
+it may be quicker to use EXISTS but you will need to test for your specific circumstance.
+
+JOIN syntax is easier to read and clearer normally as well.
