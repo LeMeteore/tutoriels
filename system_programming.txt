@@ -1,0 +1,58 @@
+Files:
+------
+- smallest unit of storage, external (disk) or internal (memory).
+- object that can be written to, or read from, or both.
+
+File hierarchy:
+---------------
+- the way Unix organizes files into.
+- nodes are called directories.
+  - directory: a file containing directory entries
+  - directory entries: objectw/ 2 components: the filename and the file
+
+Process:
+--------
+- an instance of a running program. A program is an executable file
+- a program needs resources to run, memory, storage, privileges, ...
+- unix assign to each process a pid, process-id
+- process running with user privilege is called user-process
+- user-process are not allowed to access system space, otherwise, they are terminated
+
+Users, groups:
+--------------
+- user, a person authorized to use the system with a user-name, a user-id, a password
+- group, set of users with a group-id used to provide resource sharing
+
+Privileged and unprivileged instructions:
+-----------------------------------------
+- privileged, only OS is allowad to run those instructions:
+  - acquiring more memory
+  - read/write to disk
+  - entering privileged mode
+
+Environments:
+-------------
+- array of name-value pairs, where the value is a null terminated c string.
+- the pair is called an environment string
+
+The Unix kernel api:
+--------------------
+- a user process want to write to a disk, it musk ask the os to do it.
+- the os will perform the task and transfer any data to and from the user process.
+- the Unix os is called the kernel.
+- the kernel provides all Unix services via the api
+
+Kernel:
+-------
+- a collection of separate functions bundled together into a large package.
+- a collection of signatures or prototypes of these functions --> the api
+- when unix boots, the kernel is loaded into a memory named system space
+
+System resources:
+-----------------
+a program can make requests for services
+- by making a system call, syscall to a kernel function (entry point)
+- by calling a higer level library routine that make the syscall
+- a syscall is a call to a function that is part of the unix kernel
+- the code executed during the call is actual kernel code
+- kernel code is run in privileged mode
