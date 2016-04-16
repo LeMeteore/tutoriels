@@ -1,0 +1,74 @@
+Man:
+----
+Man pages are mainly stored in the /usr/share/man directory.
+However, as long as a man page is located in the MANPATH environment variable, man will be able to pick it up.
+Gentoo will generally store MANPATH variables in /etc/env.d.
+
+Within these directories are some folders with the structure manX where X is the section number.
+For example, a standard man layout might look like so:
+root $ls /usr/share/man | grep man
+man0p
+man1
+man1p
+man2
+man3
+man3p
+man4
+man5
+man6
+man7
+man8
+man9
+mann
+root $
+
+Man page sections are:
+----------------------
+     (1)     User Commands
+     (2)     System Calls
+     (3)     Library functions
+     (4)     Devices (i.e., devices in the /dev directory)
+     (5)     File formats
+     (6)     Games and Amusements
+     (7)     Conventions and Miscellany
+     (8)     System Administration and Priveledged Commands
+     (9)     Kernel Routines
+     (L)     Deprecated. Local. Some programs install their man pages into this section instead of (1)
+     (N)     Deprecated. TCL commands
+
+Most common organization of a man page:
+---------------------------------------
+    AUTHORS: the people who created or assisted in the creation of the command.
+    BUGS: lists any know defects. Sometimes they aren't failures of the tool, but rather peculiarities of implementation.
+    ENVIRONMENT: Describes any variables that might be needed or specific versions of the shell that may be needed for the command to operate.
+    EXAMPLES or NOTES: An illustration of how to use the command including general notes.
+    REPORTING BUGS: This tells you where you should report the defects or problems you are having with the command.
+    COPYRIGHT: The organization that holds the copyright to this information; usually a disclaimer that this is free software without warranty.
+    SEE ALSO: Other commands or other documentations that are related to this command.
+
+Browsing:
+---------
+Sometimes we may need to narrow down what man page we want.
+The first way would be addressing by section.
+To found out a description of a section, one can use man like this:
+root $man 3 intro
+
+There is another way to search for commands that may return multiple results
+To do so, we use the -K option to the man command like so:
+root $man -K sleep
+
+Viewing:
+--------
+root $man 1 bc # bc cmd on section 1 of man pages
+root $man 1p bc # posix version of bc of section 1 of man pages
+root $man bc # everything related to bc
+
+Missing man pages?
+------------------
+When you don't find man pages about foo, you can try others commands like:
+root $foo --help, foo -h, foo -?
+root $info fo
+root $whatis foo, apropos foo
+root $dpkg --listfiles foo, dpkg --search foo
+root $locate '*foo*'
+root $find / -name '*foo*'
