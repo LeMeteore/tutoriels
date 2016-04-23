@@ -2,26 +2,20 @@
 # lxc-create -n debian -t debian -f /var/lib/lxc/config
 # lxc-create -n debain -t debian
 
-# Repertoire important
-# Copying rootfs to /var/lib/lxc/debian/rootfs
 
-# Ce message signifie que tt s'est bien passé
-# Root password is 'afxWkGPk' please change !
-
-# a la premiere connection et en tant que root
-# fixer le probleme des locales (dans le container)
-# dpkg-reconfigure locales
+CONFIGURATION MACHINE HOTE SANS UTILISER IPTABLES
+-------------------------------------------------
 
 # ajouter un bridge (dans la machine hote)
 # apt-get install bridge-utils
 # editer /etc/networking/interfaces
 
-# auto br0
-# iface br0 inet dhcp
-#     bridge_ports      eth0
-#     bridge_stp        off
-#     bridge_maxwait    0
-#     bridge_fd         0
+auto br0
+iface br0 inet dhcp
+    bridge_ports      eth0
+    bridge_stp        off
+    bridge_maxwait    0
+    bridge_fd         0
 
 
 # verifier existence du bridge
@@ -32,7 +26,11 @@
 # ou alors, demander une ip
 # dhclient br0
 
-# editer la config de la vm /var/lib/lxc/config
+
+CONFIGURATION CONTENEUR
+-----------------------
+
+# editer la config de la vm /var/lib/lxc/machine/config
 # mettre a jr la config reseau
 # networking
 lxc.network.type = veth
@@ -44,11 +42,116 @@ lxc.network.hwaddr = 00:11:22:33:44:55
 # une ip etant sur le meme reseau la machine hote
 lxc.network.ipv4 = 192.168.1.35/24
 
+
+CONFIGURATION MACHINE HOTE EN UTILISANT IPTABLES
+------------------------------------------------
+
+# ajouter un bridge (dans la machine hote)
+# apt-get install bridge-utils
+# editer /etc/networking/interfaces
+
+auto br0
+iface br0 inet dhcp
+    bridge_ports      eth0
+    bridge_stp        off
+    bridge_maxwait    0
+    bridge_fd         0
+
+auto  br1
+allow-hotplug br1
+iface br1 inet static
+  address   10.10.10.100
+  netmask   255.255.255.0
+  bridge_fd 0
+  bridge_maxwait 0
+  pre-up brctl addbr br1
+  up iptables -t nat -F POSTROUTING
+
+  # Exclude boxes with static IPs from Natting
+  up iptables -A PREROUTING -t nat -i br0 -p tcp -s 192.168.1.2 -j ACCEPT
+
+  # Enable Forwarding for NATed boxes
+  up iptables -t nat -A POSTROUTING -s 10.10.10.0/24 -o br0 -j MASQUERADE
+
+  # # example PORT FORWARDINGS FOR Mailserver
+  # up iptables -A PREROUTING -t nat -i br0 -p tcp --dport 25 -j DNAT --to 10.10.10.1:25
+  # up iptables -A PREROUTING -t nat -i br0 -p tcp --dport 465 -j DNAT --to 10.10.10.1:465
+  # up iptables -A PREROUTING -t nat -i br0 -p tcp --dport 587 -j DNAT --to 10.10.10.1:587
+
+  # example PORT FORWARDINGS FOR Webserver
+  up iptables -A PREROUTING -t nat -i br0 -p tcp --dport 80 -j DNAT --to 10.10.10.2:80
+  up iptables -A PREROUTING -t nat -i br0 -p tcp --dport 443 -j DNAT --to 10.10.10.2:443
+
+  post-down iptables -F
+  post-down iptables -t nat -F
+  post-down brctl delbr br1
+
+
+CONFIGURATION CONTENEUR
+-----------------------
+
+lxc.rootfs = /var/lib/lxc/deb/rootfs
+lxc.network.type = veth
+lxc.network.name = lxcnet0
+lxc.network.flags = up
+lxc.network.mtu = 1500
+
+lxc.network.ipv4= 10.10.10.1
+lxc.network.ipv4.gateway = 10.10.10.100
+lxc.network.link = br1
+lxc.network.hwaddr = 00:16:3e:ba:d7:07
+
+
+Network type: veth
+------------------
+un network device ayant une extremité assignée au conteneur,
+et l'autre extremité assignée à la valeur de lxc.network.link,
+le bridge configuré plus haut.
+
+Dans l'exemple suivant, on voit bien deux ifaces connectées au bridge:
+----------------------------------------------------------------------
+kintanu:/var/lib/lxc/deb# brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.3c970e65c027       no              eth0
+                                                        vethC1TH1R
+
+Si aucune valeur n'est specifiée par lxc.network.link, le device
+veth sera créé, mais aucun bridge ne sera attaché a l'autre bout.
+
+Exemple:
+--------
+kintanu:/var/lib/lxc/deb# brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.3c970e65c027       no              eth0
+
+# Repertoire important
+# Copying rootfs to /var/lib/lxc/debian/rootfs
+
 # start vm
 # lxc-start --name vm1
 
+
+UNE FOIS LE CONTENEUR LIVE:
+---------------------------
+
+# a la premiere connection et en tant que root
+# fixer le probleme des locales (dans le container)
+# dpkg-reconfigure locales
+
+# changer de password root
+# passwd
+
+# the next operation depends on what's inside your container confif
 # add gateway to the bridge ip
 # jai ajouté comme gw, l'ip de mon routeur et ça marche, curieusement
 # route add default gw 192.168.1.1
 
 # vm is now linked to the host
+
+
+
+# Misc
+------
+How to stop network manager from updating my /etc/resolv.conf?
+sudo emacs /etc/NetworkManager/NetworkManager.conf
+in the main section, add: dns=none
