@@ -123,3 +123,89 @@ de unicode a str: not be code > un-code > 'encode'
 
 
 Ressource interessante: sur youtube, "Travis Fischer, Esther Nam: Character encoding and Unicode in Python - PyCon 2014""
+
+
+Sous Python 3:
+--------------
+- il n'existe que deux types pour les chaines de caracteres
+  - classe bytes: b'foo'
+  - class unicode 'foo'
+
+exemples:
+
+>>> u = "patrick"
+>>> type(u)
+<class 'str'>
+>>> b
+b'patrick'
+>>> type(b)
+<class 'bytes'>
+>>>
+>>> u = str(10)
+>>> type(u)
+<class 'str'>
+>>> b = bytes(10)
+>>> type(b)
+<class 'bytes'>
+>>> b
+b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+>>> u
+'10'
+>>>
+>>> list('foo')
+['f', 'o', 'o']
+>>> list(b'foo')
+[102, 111, 111]
+>>> 'foo' == b'foo'
+False
+>>>
+>>> # on peut toujours formatter, meme avec des bytes
+>>> b = b'foo'
+>>> print("%s" % b)
+b'foo'
+>>> "{}".format(b)
+"b'foo'"
+>>> on ne peut pas modifier un tableau de bytes
+>>> b[0] = 1
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'bytes' object does not support item assignment
+>>>
+>>> # en fait, il exite un autre type pour jouer avec des tableaux modifiables d'octets
+>>>
+>>> b = bytearray()
+>>> type(b)
+<class 'bytearray'>
+>>> help(b)
+Help on bytearray object:
+
+class bytearray(object)
+ |  bytearray(iterable_of_ints) -> bytearray
+ |  bytearray(string, encoding[, errors]) -> bytearray
+ |  bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+ |  bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
+ |  bytearray() -> empty bytes array
+ |
+ |  Construct an mutable bytearray object from:
+ |    - an iterable yielding integers in range(256)
+ |    - a text string encoded using the specified encoding
+ |    - a bytes or a buffer object
+ |    - any object implementing the buffer API.
+ |    - an integer
+ |
+
+>>> dir(b)
+['__add__', '__alloc__', '__class__', '__contains__', '__delattr__', '__delitem__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__setitem__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'capitalize', 'center', 'clear', 'copy', 'count', 'decode', 'endswith', 'expandtabs', 'extend', 'find', 'fromhex', 'hex', 'index', 'insert', 'isalnum', 'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'pop', 'remove', 'replace', 'reverse', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+>>>
+
+
+- le systeme d'encodage par defaut depend de l'os
+
+>>> import sys
+>>> sys.getdefaultencoding()
+'utf-8'
+
+Misc:
+-----
+Toujours ouvrir un fichier de cette maniere:
+>>> with open(filename, 'r', encoding='utf-8') as f:
