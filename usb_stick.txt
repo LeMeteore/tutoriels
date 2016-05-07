@@ -47,3 +47,57 @@
 # demonter la cle, umount /dev/sdd*
 # ecrire l'image sur le disque
 # dd bs=4M if=/home/nsukami/Téléchargements/2014-09-09-wheezy-raspbian.img of=/dev/sdc; sync
+
+
+# DEPLACER UN REPERTOIRE, D'UNE PARTITION A UNE AUTRE
+-----------------------------------------------------
+
+# lancer l'utilitaire de partitionnement
+# fdisk /dev/sda
+# l'assistant est assez precis et sympa
+# n t w
+
+# creer une partion logique
+# veiller a choisir ext4 comme systeme de fichiers
+# ecrire la nouvelle table de partition
+# w
+
+# formatter le disque
+# si votre partition logique est /dev/sdaX
+# mkfs.ext4 /dev/sdaX
+
+# il faudra sans doute redemarrer pour que le systeme de fichier tienne compte
+# de la nouvelle table de partition. (avant ou apres le formattage, j'ai oublié)
+
+# pour deplacer /var
+# creer un repertoire temporaire dans lequel on va stocker les données actuelles
+# mkdir /mnt/var
+
+# monter la nouvelle partition sous /mnt/var
+# mount /dev/sdaX /mnt/var
+
+# basculer en mode single
+# pour arreter toute activité dans le repertoire /var
+# init 1
+
+# sauvegarder le contenu de /var, et non /var lui meme a l'interieur de /mnt/var
+# cd /var
+# cp -ax * /mnt/var
+
+# renomer le repertoire /var
+# cd /
+# mv var var.old
+
+# creer un autre repertoire /var
+# cd /
+# mkdir var
+
+# demonter la nouvelle partition
+# umount /dev/sdaX
+
+# remonter la nouvelle partition sous le repertoire fraichement créé /var
+# mount /dev/sdaX /var
+
+# faire en sorte que cette config soit appliquée a chaque demarrage
+# ajouter la ligne suivante dans /etc/fstab
+# /dev/sdaX       /var     ext4    defaults    0 0
