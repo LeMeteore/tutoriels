@@ -72,6 +72,32 @@
 # to be sure, you have the latest keys of your friends
 # gpg --refresh-keys --keyserver hkp://subkeys.pgp.net
 
+# renew expiration date of pub key
+# first, list keys
+# ⤷ gpg --list-keys Nsukami
+# pub   4096R/9F71504C 2015-09-01 [expirée : 2016-08-31]
+# uid                  Nsukami (Nskm) <ndkpatt@gmail.com>
+
+# then edit the key
+# gpg --edit-key 9F71504C
+
+# list key inside gpg prompt
+# gpg> list
+
+# select pub key
+# gpg> key 0
+
+# update expiration date
+# gpg> expire
+
+# do the same for the subkey
+
+# save
+# gpg> save
+
+# send keys to server
+# gpg --keyserver pgp.mit.edu --send-keys XXXXXX
+
 
 # Description of some fields
 
